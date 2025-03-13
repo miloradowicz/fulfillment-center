@@ -1,11 +1,11 @@
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react'
 import { toast } from 'react-toastify'
 import { isAxiosError } from 'axios'
-import { DynamicField, ProductMutation } from '../types'
-import { useAppDispatch, useAppSelector } from '../app/hooks.ts'
-import { selectAllClients } from '../store/slices/clientSlice.ts'
-import { fetchClients } from '../store/thunks/clientThunk.ts'
-import { addProduct } from '../store/thunks/productThunk.ts'
+import { DynamicField, ProductMutation } from '../../../types'
+import { useAppDispatch, useAppSelector } from '../../../app/hooks.ts'
+import { selectAllClients } from '../../../store/slices/clientSlice.ts'
+import { fetchClients } from '../../../store/thunks/clientThunk.ts'
+import { addProduct } from '../../../store/thunks/productThunk.ts'
 
 const initialState: ProductMutation = {
   client: '',
