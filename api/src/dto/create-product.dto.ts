@@ -17,6 +17,10 @@ export class CreateProductDto {
   @IsMongoId({ message: 'Некорректный формат ID' })
   client: string
 
+  @IsNotEmpty({ message: 'Поле склад обязательно для заполнения' })
+  @IsMongoId({ message: 'Некорректный формат ID склада' })
+  stock?: string
+
   @IsNotEmpty({ message: 'Поле название обязательно для заполнения' })
   @MinLength(3, { message: 'Название должно состоять минимум из 3 символов' })
   title: string

@@ -27,7 +27,7 @@ export class ProductsService {
     let product: ProductDocument | null
 
     if (populate) {
-      product = await this.productModel.findById(id).populate('client').exec()
+      product = await this.productModel.findById(id).populate('client').populate('stock').exec()
     } else {
       product = await this.productModel.findById(id).exec()
     }
@@ -41,15 +41,23 @@ export class ProductsService {
 
   async getAllByClient(clientId: string, populate: boolean) {
     if (populate) {
-      return (await this.productModel.find({ client: clientId }).populate('client')).reverse()
+      return (await this.productModel.find({ client: clientId }).populate('client').populate('stock')).reverse()
     } else {
       return (await this.productModel.find({ client: clientId })).reverse()
     }
   }
 
+  async getAllByStock(stockId: string, populate: boolean) {
+    if (populate) {
+      return (await this.productModel.find({ stock: stockId }).populate('client').populate('stock')).reverse()
+    } else {
+      return (await this.productModel.find({ stock: stockId })).reverse()
+    }
+  }
+
   async getAll(populate: boolean) {
     if (populate) {
-      return (await this.productModel.find().populate('client')).reverse()
+      return (await this.productModel.find().populate('client').populate('stock')).reverse()
     }
     return (await this.productModel.find()).reverse()
   }

@@ -34,10 +34,13 @@ export class ProductsController {
   @Get()
   async getAllProducts(
     @Query('client') clientId: string,
+    @Query('stock') stockId: string,
     @Query('populate') populate?: string
   ) {
     if (clientId) {
       return await this.productsService.getAllByClient(clientId, populate === '1')
+    } else if (stockId) {
+      return await this.productsService.getAllByStock(stockId, populate === '1')
     } else {
       return await this.productsService.getAll(populate === '1')
     }

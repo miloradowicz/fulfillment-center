@@ -11,6 +11,12 @@ export class Product {
     ref: 'Client',
   })
   client: string
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Stock',
+  })
+  stock: string
   @Prop({ required: true })
   title: string
   @Prop({ required: true })
