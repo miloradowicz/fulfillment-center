@@ -16,7 +16,7 @@ const ProductsDataList = () => {
       headerName: 'Название',
       flex: 1,
       editable: false,
-      sortable:true,
+      sortable: true,
     },
     {
       field: 'client',
@@ -40,14 +40,25 @@ const ProductsDataList = () => {
       flex: 1,
       sortable: false,
       editable: false,
-      filterable: true },
+      filterable: true,
+    },
     {
       field: 'amount',
       headerName: 'Количество',
       width: 100,
       sortable: true,
       editable: false,
-      filterable: true },
+      filterable: true,
+    },
+    {
+      field: 'stock',
+      headerName: 'Склад',
+      flex: 1,
+      sortable: true,
+      editable: false,
+      filterable: true,
+      valueGetter: (_value: string, row: ProductWithPopulate) => row.stock?.name || 'Не указан',
+    },
     {
       field: 'Actions',
       headerName: '',
@@ -64,15 +75,14 @@ const ProductsDataList = () => {
           <IconButton onClick={() => deleteOneProduct(row._id)}>
             <ClearIcon />
           </IconButton>
-          <NavLink className="text-gray-500 hover:text-gray-700 ml-2"
-            to={`/products/${ row._id }`}
-          >
-              Подробнее
+          <NavLink className="text-gray-500 hover:text-gray-700 ml-2" to={`/products/${ row._id }`}>
+            Подробнее
           </NavLink>
         </>
       ),
     },
   ]
+
   return (
     <Box className="max-w-[1000px] mx-auto w-full">
       {products ? (
@@ -92,7 +102,9 @@ const ProductsDataList = () => {
           checkboxSelection
           disableRowSelectionOnClick
         />
-      ) : <Typography className="text-center mt-5">Товаров нет</Typography>}
+      ) : (
+        <Typography className="text-center mt-5">Товаров нет</Typography>
+      )}
     </Box>
   )
 }

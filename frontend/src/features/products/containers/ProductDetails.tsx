@@ -82,6 +82,15 @@ const ProductDetails = () => {
                 </Box>
               )}
 
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="h6" fontWeight={600}>
+                  Склад:
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  <strong>{product.stock?.name || 'Не указан'}</strong>
+                </Typography>
+              </Box>
+
               {product.documents.length > 0 && (
                 <Box mt={2}>
                   <Typography variant="h6" fontWeight={600}>

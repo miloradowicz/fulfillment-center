@@ -1,17 +1,19 @@
 import Grid from '@mui/material/Grid2'
 import { Button, CircularProgress, TextField, Typography, Box, Autocomplete } from '@mui/material'
-import useProductForm from '../../../hooks/useProductForm.ts'
+import useProductForm from '../hooks/useProductForm.ts'
 
 const ProductForm = () => {
 
   const {
     form,
     selectedClient,
+    selectedStock,
     dynamicFields,
     newField,
     showNewFieldInputs,
     file,
     clients,
+    stocks,
     loading,
     inputChangeHandler,
     handleFileChange,
@@ -20,6 +22,7 @@ const ProductForm = () => {
     onSubmit,
     setForm,
     setSelectedClient,
+    setSelectedStock,
     setNewField,
     setShowNewFieldInputs,
     setErrors,
@@ -51,6 +54,30 @@ const ProductForm = () => {
                 size="small"
                 error={!!errors.client}
                 helperText={errors.client}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid>
+          <Autocomplete
+            options={stocks || []}
+            getOptionLabel={option => option.name}
+            value={stocks?.find(stock => stock._id === selectedStock) || null}
+            onChange={(_event, newValue) => {
+              const stockId = newValue ? newValue._id : ''
+              setSelectedStock(stockId)
+              setErrors(prevErrors => ({ ...prevErrors, stock: '' }))
+              setForm(prevState => ({ ...prevState, stock: stockId }))
+            }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label="Склад"
+                fullWidth
+                size="small"
+                error={!!errors.stock}
+                helperText={errors.stock}
               />
             )}
           />

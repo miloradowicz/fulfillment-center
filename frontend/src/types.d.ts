@@ -51,6 +51,7 @@ export interface Product {
   amount: number
   barcode: string
   article: string
+  stock: string
   documents?: { document: string }[]
   dynamic_fields?: DynamicField[]
   logs?: Log[]
@@ -63,6 +64,7 @@ export interface ProductWithPopulate {
   amount: number
   barcode: string
   article: string
+  stock: StockPopulate;
   documents: { document: string }[]
   dynamic_fields: DynamicField[]
   logs?: Log[]

@@ -1,11 +1,13 @@
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react'
 import { toast } from 'react-toastify'
 import { isAxiosError } from 'axios'
-import { DynamicField, ProductMutation } from '../types'
-import { useAppDispatch, useAppSelector } from '../app/hooks.ts'
-import { selectAllClients } from '../store/slices/clientSlice.ts'
-import { fetchClients } from '../store/thunks/clientThunk.ts'
-import { addProduct } from '../store/thunks/productThunk.ts'
+import { DynamicField, ProductMutation } from '../../../types'
+import { useAppDispatch, useAppSelector } from '../../../app/hooks.ts'
+import { selectAllClients } from '../../../store/slices/clientSlice.ts'
+import { fetchClients } from '../../../store/thunks/clientThunk.ts'
+import { addProduct } from '../../../store/thunks/productThunk.ts'
+import { fetchStocks } from '../../../store/thunks/stocksThunk.ts'
+import { selectAllStocks } from '../../../store/slices/stocksSlice.ts'
 
 const initialState: ProductMutation = {
   client: '',
@@ -13,6 +15,7 @@ const initialState: ProductMutation = {
   amount: 0,
   barcode: '',
   article: '',
+  stock: '',
   documents: [],
   dynamic_fields: [],
 }
@@ -20,6 +23,7 @@ const initialState: ProductMutation = {
 const useProductForm = () => {
   const [form, setForm] = useState<ProductMutation>(initialState)
   const [selectedClient, setSelectedClient] = useState('')
+  const [selectedStock, setSelectedStock] = useState('')
   const [dynamicFields, setDynamicFields] = useState<DynamicField[]>([])
   const [newField, setNewField] = useState<DynamicField>({ key: '', label: '', value: '' })
   const [showNewFieldInputs, setShowNewFieldInputs] = useState(false)
@@ -28,10 +32,12 @@ const useProductForm = () => {
 
   const dispatch = useAppDispatch()
   const clients = useAppSelector(selectAllClients)
+  const stocks = useAppSelector(selectAllStocks)
   const loading = useAppSelector(state => state.products.loadingAdd)
 
   useEffect(() => {
     dispatch(fetchClients())
+    dispatch(fetchStocks())
   }, [dispatch])
 
   const inputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -96,6 +102,7 @@ const useProductForm = () => {
       formData.append('amount', String(form.amount))
       formData.append('barcode', form.barcode)
       formData.append('article', form.article)
+      formData.append('stock', selectedStock)
 
       if (dynamicFields.length > 0) {
         formData.append('dynamic_fields', JSON.stringify(dynamicFields))
@@ -111,6 +118,7 @@ const useProductForm = () => {
       setForm(initialState)
       setDynamicFields([])
       setSelectedClient('')
+      setSelectedStock('')
       setFile(null)
       setErrors({})
     } catch (e) {
@@ -149,11 +157,13 @@ const useProductForm = () => {
   return {
     form,
     selectedClient,
+    selectedStock,
     dynamicFields,
     newField,
     showNewFieldInputs,
     file,
     clients,
+    stocks,
     loading,
     inputChangeHandler,
     handleFileChange,
@@ -163,6 +173,7 @@ const useProductForm = () => {
     setForm,
     setDynamicFields,
     setSelectedClient,
+    setSelectedStock,
     setFile,
     setNewField,
     setShowNewFieldInputs,
