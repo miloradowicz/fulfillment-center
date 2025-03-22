@@ -13,7 +13,6 @@ import { Order, OrderDocument } from '../schemas/order.schema'
 import { Counter, CounterDocument } from '../schemas/counter.schema'
 import { Counterparty, CounterpartyDocument } from '../schemas/counterparty.schema'
 
-
 @Injectable()
 export class SeederService {
   constructor(
@@ -50,6 +49,33 @@ export class SeederService {
     await this.stockModel.deleteMany({})
     await this.counterModel.deleteMany({})
     await this.counterpartyModel.deleteMany({})
+
+    const [_User1, _User2, _admin] = await this.userModel.create([
+      {
+        email: 'test@gmail.com',
+        password: '1234567890',
+        confirmPassword: '1234567890',
+        displayName: 'Мария',
+        role: 'stock-worker',
+        token: randomUUID(),
+      },
+      {
+        email: 'test1@gmail.com',
+        password: '1234567890',
+        confirmPassword: '1234567890',
+        displayName: 'Вася',
+        role: 'stock-worker',
+        token: randomUUID(),
+      },
+      {
+        email: 'john@doe.com',
+        password: '1234567890',
+        confirmPassword: '1234567890',
+        displayName: 'Admin',
+        role: 'super-admin',
+        token: randomUUID(),
+      },
+    ])
 
     const _clients = await this.clientModel.create({
       name: 'CHAPSAN',
@@ -93,6 +119,12 @@ export class SeederService {
         dynamic_fields: [
           { label: 'Размер', key: 'size', value: 'L' },
           { label: 'Цвет', key: 'color', value: 'Белый' },
+        ],
+        logs: [
+          { user: _User1, change: 'record #1', date: new Date().toISOString() },
+          { user: _User1, change: 'record #2', date: new Date().toISOString() },
+          { user: _User1, change: 'record #3', date: new Date().toISOString() },
+          { user: _User2, change: 'record #4', date: new Date().toISOString() },
         ],
       },
     ])
@@ -141,33 +173,6 @@ export class SeederService {
       { $set: { seq: 3 } },
       { upsert: true }
     )
-
-    const [_User1, _User2, _admin] = await this.userModel.create([
-      {
-        email: 'test@gmail.com',
-        password: '1234567890',
-        confirmPassword: '1234567890',
-        displayName: 'Мария',
-        role: 'stock-worker',
-        token: randomUUID(),
-      },
-      {
-        email: 'test1@gmail.com',
-        password: '1234567890',
-        confirmPassword: '1234567890',
-        displayName: 'Вася',
-        role: 'stock-worker',
-        token: randomUUID(),
-      },
-      {
-        email: 'john@doe.com',
-        password: '1234567890',
-        confirmPassword: '1234567890',
-        displayName: 'Admin',
-        role: 'super-admin',
-        token: randomUUID(),
-      },
-    ])
 
     const [_stock1, _stock2] = await this.stockModel.create([
       {
@@ -238,6 +243,12 @@ export class SeederService {
         arrival_date: new Date().toISOString(),
         sent_amount: '2 мешка',
         stock: _stock2._id,
+        logs: [
+          { user: _User2, change: 'record #1', date: new Date().toISOString() },
+          { user: _User1, change: 'record #2', date: new Date().toISOString() },
+          { user: _admin, change: 'record #3', date: new Date().toISOString() },
+          { user: _User2, change: 'record #4', date: new Date().toISOString() },
+        ],
       },
       {
         arrivalNumber: 'ARL-3',
