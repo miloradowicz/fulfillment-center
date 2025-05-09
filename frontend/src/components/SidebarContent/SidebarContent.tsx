@@ -9,7 +9,7 @@ import {
   Truck,
   Users,
   Warehouse,
-  Settings,
+  Settings, BadgeHelp,
 } from 'lucide-react'
 import React from 'react'
 import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
@@ -160,6 +160,18 @@ const SidebarContent: React.FC<Props> = ({ onLinkClick }) => {
           <span>Архив</span>
         </NavLink>
       </ProtectedElement>
+
+      <NavLink
+        to="/app-usage"
+        onClick={onLinkClick}
+        className={({ isActive }) =>
+          `w-full flex items-center gap-2 p-2 rounded-md transition-colors
+            ${ isActive ? 'bg-ring/50 text-primary' : 'text-primary hover:bg-primary hover:text-card' }`
+        }
+      >
+        <BadgeHelp size={25} />
+        <span>Справка</span>
+      </NavLink>
     </nav>
   )
 }
