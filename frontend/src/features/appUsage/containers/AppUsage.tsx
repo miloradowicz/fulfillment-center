@@ -5,6 +5,7 @@ import CustomTitle from '@/components/CustomTitle/CustomTitle.tsx'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { tabTriggerStyles } from '@/utils/commonStyles.ts'
 import { BadgeHelp } from 'lucide-react'
+import GeneralOverview from '@/features/appUsage/components/GeneralOverview.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -54,7 +55,7 @@ const AppUsage = () =>  {
         </TabsList>
 
         <TabsContent value="general">
-          Общее описание проекта
+          <GeneralOverview />
         </TabsContent>
 
         <TabsContent value="clients">
