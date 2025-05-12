@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { tabTriggerStyles } from '@/utils/commonStyles.ts'
 import { BadgeHelp } from 'lucide-react'
 import GeneralOverview from '@/features/appUsage/components/GeneralOverview.tsx'
+import ClientOverview from '@/features/appUsage/components/ClientOverview.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -46,11 +47,11 @@ const AppUsage = () =>  {
             <TabsTrigger className={tabTriggerStyles}  value="arrivals">Поставки</TabsTrigger>
             <TabsTrigger className={tabTriggerStyles} value="orders">Заказы</TabsTrigger>
             <TabsTrigger className={tabTriggerStyles} value="tasks">Задачи</TabsTrigger>
+            <TabsTrigger className={tabTriggerStyles} value="reports">Отчеты</TabsTrigger>
             <TabsTrigger className={tabTriggerStyles} value="stocks">Склады</TabsTrigger>
             <TabsTrigger className={tabTriggerStyles} value="counterparties">Контрагенты</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="users">Сотрудники</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="services">Услуги</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="invoices">Счета</TabsTrigger>
+            <TabsTrigger className={tabTriggerStyles} value="archive">Архив</TabsTrigger>
+            <TabsTrigger className={tabTriggerStyles} value="admin-panel">Админ панель</TabsTrigger>
           </div>
         </TabsList>
 
@@ -59,7 +60,7 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="clients">
-          Клиенты
+          <ClientOverview />
         </TabsContent>
 
         <TabsContent value="products">
@@ -78,6 +79,10 @@ const AppUsage = () =>  {
           Задачи
         </TabsContent>
 
+        <TabsContent value="reports">
+          Отчеты
+        </TabsContent>
+
         <TabsContent value="stocks">
           Склады
         </TabsContent>
@@ -86,16 +91,12 @@ const AppUsage = () =>  {
           Контрагенты
         </TabsContent>
 
-        <TabsContent value="users">
-          Пользователи
+        <TabsContent value="archive">
+          Архив
         </TabsContent>
 
-        <TabsContent value="services">
-          Услуги
-        </TabsContent>
-
-        <TabsContent value="invoices">
-          Счета
+        <TabsContent value="admin-panel">
+          Админ панель
         </TabsContent>
       </Tabs>
     </div>

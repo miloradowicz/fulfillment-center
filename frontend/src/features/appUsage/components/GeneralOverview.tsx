@@ -8,7 +8,7 @@ const GeneralOverview = () => {
       </CardHeader>
       <CardContent className="space-y-4 text-sm leading-relaxed text-muted-foreground">
         <p>
-          <strong>PROJECT</strong> — это внутренняя система, разработанная для упрощения и автоматизации
+          <strong>IZZI LIFE</strong> — это внутренняя система, разработанная для упрощения и автоматизации
           нашей повседневной работы. Она позволяет удобно управлять всеми операциями.
         </p>
 
