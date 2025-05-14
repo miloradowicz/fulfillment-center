@@ -7,6 +7,7 @@ import { tabTriggerStyles } from '@/utils/commonStyles.ts'
 import { BadgeHelp } from 'lucide-react'
 import GeneralOverview from '@/features/appUsage/components/GeneralOverview.tsx'
 import ClientOverview from '@/features/appUsage/components/ClientOverview.tsx'
+import ProductOverview from '@/features/appUsage/components/ProductOverview.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -64,7 +65,7 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="products">
-          Товары
+          <ProductOverview />
         </TabsContent>
 
         <TabsContent value="arrivals">
