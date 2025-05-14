@@ -9,6 +9,7 @@ import GeneralOverview from '@/features/appUsage/components/GeneralOverview.tsx'
 import ClientOverview from '@/features/appUsage/components/ClientOverview.tsx'
 import ProductOverview from '@/features/appUsage/components/ProductOverview.tsx'
 import CounterpartyOverview from '@/features/appUsage/components/CounterpartyOverview.tsx'
+import ArchiveOverview from '@/features/appUsage/components/ArchiveOverview.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -94,7 +95,7 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="archive">
-          Архив
+          <ArchiveOverview />
         </TabsContent>
 
         <TabsContent value="admin-panel">
