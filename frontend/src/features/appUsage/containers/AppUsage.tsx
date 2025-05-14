@@ -8,6 +8,7 @@ import { BadgeHelp } from 'lucide-react'
 import GeneralOverview from '@/features/appUsage/components/GeneralOverview.tsx'
 import ClientOverview from '@/features/appUsage/components/ClientOverview.tsx'
 import ProductOverview from '@/features/appUsage/components/ProductOverview.tsx'
+import CounterpartyOverview from '@/features/appUsage/components/CounterpartyOverview.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -89,7 +90,7 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="counterparties">
-          Контрагенты
+          <CounterpartyOverview />
         </TabsContent>
 
         <TabsContent value="archive">
