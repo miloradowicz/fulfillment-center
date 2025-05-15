@@ -10,6 +10,7 @@ import ClientOverview from '@/features/appUsage/components/ClientOverview.tsx'
 import ProductOverview from '@/features/appUsage/components/ProductOverview.tsx'
 import CounterpartyOverview from '@/features/appUsage/components/CounterpartyOverview.tsx'
 import ArchiveOverview from '@/features/appUsage/components/ArchiveOverview.tsx'
+import ArrivalOverview from '@/features/appUsage/components/ArrivalOverview.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -71,7 +72,7 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="arrivals">
-          Поставки
+          <ArrivalOverview />
         </TabsContent>
 
         <TabsContent value="orders">
