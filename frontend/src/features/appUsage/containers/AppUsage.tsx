@@ -12,6 +12,7 @@ import CounterpartyOverview from '@/features/appUsage/components/CounterpartyOve
 import ArchiveOverview from '@/features/appUsage/components/ArchiveOverview.tsx'
 import ArrivalOverview from '@/features/appUsage/components/ArrivalOverview.tsx'
 import OrderOverview from '@/features/appUsage/components/OrderOverview.tsx'
+import ReportOverview from '@/features/appUsage/components/ReportOverview.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -85,7 +86,7 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="reports">
-          Отчеты
+          <ReportOverview />
         </TabsContent>
 
         <TabsContent value="stocks">
