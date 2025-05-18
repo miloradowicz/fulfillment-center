@@ -17,7 +17,7 @@ const ArchiveOverview = () => {
           восстанавливать или полностью удалять их из системы. Система поддерживает работу с архивными версиями
           следующих сущностей:
         </p>
-        <ul className="list-disc pl-5 columns-2">
+        <ul className="mt-2 list-disc pl-5 text-muted-foreground space-y-1">
           <li>Клиенты</li>
           <li>Товары</li>
           <li>Поставки</li>
@@ -83,7 +83,6 @@ const ArchiveOverview = () => {
           <ul className="list-disc pl-5 text-blue-700 space-y-1">
             <li>Восстановленные данные появляются в своих основных разделах</li>
             <li>Удаленные данные невозможно восстановить</li>
-            <li>Некоторые данные могут быть защищены от удаления, если используются в других документах</li>
           </ul>
         </div>
       </CardContent>

@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const taskImages = [
-  '/app-usage/arrivals/arrivals-list.png',
-  '/app-usage/arrivals/arrivals-form.png',
-  '/app-usage/arrivals/arrivals-details.png',
+  '/app-usage/tasks/tasks-board.png',
+  '/app-usage/tasks/tasks-form.png',
+  '/app-usage/tasks/tasks-details.png',
 ]
 
 const TaskOverview = () => {
@@ -18,7 +18,7 @@ const TaskOverview = () => {
       <CardContent className="space-y-6 text-sm leading-relaxed text-muted-foreground">
         <p>
           <strong>Система задач</strong> помогает организовать работу команды. Здесь можно создавать задания,
-          отслеживать их выполнение и контролировать сроки.
+          отслеживать их выполнение и контролировать сроки. Можно быстро находить нужную задачу с помощью строки поиска.
         </p>
 
         <div>
@@ -36,6 +36,27 @@ const TaskOverview = () => {
             className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
           />
         </div>
+
+        <div>
+          <h3 className="font-semibold">Детали задачи</h3>
+          <p>При нажатии на номер задачи, боковая панель с полной информацией:</p>
+          <ul className="list-disc pl-5">
+            <li>Номер задачи</li>
+            <li>Статус задачи</li>
+            <li>Название задачи</li>
+            <li>Полное описание задачи</li>
+            <li>Исполнитель</li>
+            <li>Связанный заказ или поставка</li>
+            <li>Даты создания и обновления</li>
+            <li>История изменений</li>
+          </ul>
+          <img
+            src={taskImages[2]}
+            alt="Детали задачи"
+            className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
+          />
+        </div>
+
 
         <div>
           <h3 className="font-semibold">Создание и редактирование</h3>
@@ -62,31 +83,6 @@ const TaskOverview = () => {
         </div>
 
         <div>
-          <h3 className="font-semibold">Детали задачи</h3>
-          <p>При нажатии на номер задачи, открывается подробная информация:</p>
-          <ul className="list-disc pl-5">
-            <li>Полное описание</li>
-            <li>Связанные заказы или поставки</li>
-            <li>История изменений</li>
-            <li>Даты создания и обновления</li>
-          </ul>
-          <img
-            src={taskImages[2]}
-            alt="Детали задачи"
-            className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
-          />
-        </div>
-
-        <div>
-          <h3 className="font-semibold">Фильтрация</h3>
-          <p>Чтобы быстро найти нужные задачи:</p>
-          <ul className="list-disc pl-5">
-            <li>Используйте поиск по названию</li>
-            <li>Фильтруйте по конкретному сотруднику</li>
-          </ul>
-        </div>
-
-        <div>
           <h3 className="font-semibold">Архивация</h3>
           <p>
             Неактуальные задачи можно архивировать (кнопка <strong>«Архивировать»</strong>). Такие задачи
@@ -97,8 +93,8 @@ const TaskOverview = () => {
         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
           <h3 className="font-semibold text-blue-800">Ключевые особенности</h3>
           <ul className="list-disc pl-5 text-blue-700 space-y-1">
-            <li>Простое управление статусами - перетаскивайте задачи между колонками или выбирайте статус вручную</li>
-            <li>Привязка к заказам и поставкам - связывайте задачи с конкретными документами</li>
+            <li>Простое управление статусами - перетаскивайте задачи между колонками или при помощи выпадающего списка</li>
+            <li>Привязка к заказам и поставкам - связывайте задачи с конкретными задачами</li>
             <li>Полная история изменений - система сохраняет все действия с задачами</li>
             <li>Гибкая фильтрация - ищите задачи по исполнителю, статусу или тексту</li>
             <li>Автоматическое обновление при изменении исходных данных</li>

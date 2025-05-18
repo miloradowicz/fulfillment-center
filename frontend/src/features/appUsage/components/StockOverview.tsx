@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const stockImages = [
-  '/app-usage/arrivals/arrivals-list.png',
-  '/app-usage/arrivals/arrivals-form.png',
-  '/app-usage/arrivals/arrivals-details.png',
+  '/app-usage/stocks/stocks-list.png',
+  '/app-usage/stocks/stocks-form.png',
+  '/app-usage/stocks/stocks-details.png',
+  '/app-usage/stocks/stocks-write-off-form.png',
 ]
 
 const StockOverview = () => {
@@ -67,16 +68,8 @@ const StockOverview = () => {
             <li>Вкладки с товарами, браком и списаниями</li>
             <li>Историю изменений</li>
           </ul>
-          <img
-            src={stockImages[2]}
-            alt="Детали склада"
-            className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
-          />
-        </div>
-
-        <div>
-          <h3 className="font-semibold flex items-center gap-2">
-            Учет товаров
+          <h3 className="font-semibold flex items-center gap-2 mt-3">
+              Учет товаров
           </h3>
           <p>Во вкладке "Товары" отображается:</p>
           <ul className="list-disc pl-5">
@@ -88,7 +81,7 @@ const StockOverview = () => {
           </ul>
           <img
             src={stockImages[2]}
-            alt="Учет товаров"
+            alt="Детали склада"
             className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
           />
         </div>
@@ -137,7 +130,7 @@ const StockOverview = () => {
             <li>Отрицательные остатки выделяются красным и требуют проверки корректности заполненных данных
               в поставках/заказах/списаниях
             </li>
-            <li>История изменений - сохраняются все операции с товарами</li>
+            <li>Все изменения фиксируются в истории</li>
           </ul>
         </div>
       </CardContent>

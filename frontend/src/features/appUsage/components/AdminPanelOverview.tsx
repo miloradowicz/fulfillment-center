@@ -1,9 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const images = [
-  '/app-usage/arrivals/arrivals-list.png',
-  '/app-usage/arrivals/arrivals-form.png',
-  '/app-usage/arrivals/arrivals-details.png',
+  '/app-usage/admin-panel/users-list.png',
+  '/app-usage/admin-panel/users-form.png',
+  '/app-usage/admin-panel/services-list.png',
+  '/app-usage/admin-panel/services-details.png',
+  '/app-usage/admin-panel/services-form.png',
+  '/app-usage/admin-panel/invoices-list.png',
+  '/app-usage/admin-panel/invoices-details.png',
+  '/app-usage/admin-panel/invoices-form.png',
 ]
 
 const AdminPanelOverview = () => {
@@ -77,6 +82,7 @@ const AdminPanelOverview = () => {
             <h3 className="font-semibold text-blue-800">Особенности работы с сотрудниками</h3>
             <ul className="list-disc pl-5 text-blue-700 space-y-1">
               <li>Email сотрудника должен быть уникальным и валидным — он используется для входа в систему</li>
+              <li>При создании сотрудника, телефонный номер и Email проверяются на корректность формата</li>
               <li>После архивации сотрудник теряет доступ к системе, но его действия сохраняются в истории</li>
             </ul>
           </div>
@@ -100,7 +106,7 @@ const AdminPanelOverview = () => {
               <li><strong>«Архивировать»</strong> — перемещает услугу в архив, исключая её из активного списка.</li>
             </ul>
             <img
-              src={images[3]}
+              src={images[2]}
               alt="Список услуг"
               className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
             />
@@ -113,7 +119,7 @@ const AdminPanelOverview = () => {
               с полной информацией: название, категория, цена, описание, тип и история изменений.
             </p>
             <img
-              src={images[1]}
+              src={images[3]}
               alt="Детали услуги"
               className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
             />
@@ -138,7 +144,7 @@ const AdminPanelOverview = () => {
               Аналогичная форма используются при редактировании услуги (кнопка <strong>«Редактировать»</strong>).
             </p>
             <img
-              src={images[1]}
+              src={images[4]}
               alt="Форма создания услуги"
               className="mt-3 rounded-lg border shadow-sm w-5/6 mx-auto"
             />
@@ -182,7 +188,7 @@ const AdminPanelOverview = () => {
               <li><strong>«Архивировать»</strong> — переместить счет в архив (например, если он аннулирован).</li>
             </ul>
             <img
-              src={images[3]}
+              src={images[5]}
               alt="Список счетов"
               className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
             />
@@ -201,7 +207,7 @@ const AdminPanelOverview = () => {
               </li>
             </ul>
             <img
-              src={images[2]}
+              src={images[6]}
               alt="Детали счета"
               className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
             />
@@ -241,7 +247,7 @@ const AdminPanelOverview = () => {
               При редактировании счета отображается аналогичная форма с предварительно заполненными данными.
             </p>
             <img
-              src={images[2]}
+              src={images[7]}
               alt="Форма счетов"
               className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
             />

@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const images = [
-  '/app-usage/arrivals/arrivals-list.png',
-  '/app-usage/arrivals/arrivals-form.png',
-  '/app-usage/arrivals/arrivals-details.png',
+  '/app-usage/orders/orders-list.png',
+  '/app-usage/orders/orders-form.png',
+  '/app-usage/orders/orders-details.png',
 ]
 
 const OrderOverview = () => {
@@ -41,7 +41,7 @@ const OrderOverview = () => {
             <li><strong>«Отменить»</strong> — при ошибочном создании поставки, удаляет ее из системы</li>
           </ul>
           <p className="mt-2">
-          Для удобства на главной странице были добавлены кнопки вызова форм:
+            Для удобства на главной странице были добавлены кнопки вызова форм:
           </p>
           <ul className="list-disc pl-5">
             <li><strong>«Добавить заказ»</strong> — создание нового заказа</li>
@@ -125,12 +125,12 @@ const OrderOverview = () => {
         </div>
 
         <div>
-          <h3 className="font-semibold">Интеграция с другими модулями</h3>
-          <ul className="list-disc pl-5">
-            <li><strong>Складской учет</strong> — автоматическое обновление остатков</li>
-            <li><strong>Финансы</strong> — контроль оплат и формирование счетов</li>
-            <li><strong>Клиентская база</strong> — история заказов по клиентам</li>
-          </ul>
+          <h3 className="font-semibold">Архивация</h3>
+          <p>
+            Неактуальные заказы можно архивировать (кнопка <strong>«Архивировать»</strong>). Такие заказы
+            перемещаются в архив и исключаются из основного списка. Важно отметить, что архивировать можно только
+            заказы со статусом «Доставлен» и полностью оплаченные.
+          </p>
         </div>
 
         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
