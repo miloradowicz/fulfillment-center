@@ -15,6 +15,7 @@ import OrderOverview from '@/features/appUsage/components/OrderOverview.tsx'
 import ReportOverview from '@/features/appUsage/components/ReportOverview.tsx'
 import TaskOverview from '@/features/appUsage/components/TaskOverview.tsx'
 import StockOverview from '@/features/appUsage/components/StockOverview.tsx'
+import AdminPanelOverview from '@/features/appUsage/components/AdminPanelOverview.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -104,7 +105,7 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="admin-panel">
-          Админ панель
+          <AdminPanelOverview />
         </TabsContent>
       </Tabs>
     </div>
