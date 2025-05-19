@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import mongoose, { Model, Types } from 'mongoose'
 import { Stock, StockDocument } from '../schemas/stock.schema'
@@ -103,6 +103,10 @@ export class StocksService {
     this.stockManipulationService.init()
 
     await this.doStocking(stock._id, writeOffDto.write_offs)
+
+    if (!this.stockManipulationService.testStockProducts(stock._id, writeOffDto.write_offs.map(x => x.product))) {
+      throw new BadRequestException('На данном складе нет необходимого количества товара')
+    }
 
     await this.stockManipulationService.saveStock(stock._id)
 
