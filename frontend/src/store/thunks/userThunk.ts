@@ -38,7 +38,7 @@ export const loginUser = createAsyncThunk<User, LoginMutation, { rejectValue: Va
       const response = await axiosAPI.post('/users/sessions', data)
       return response.data
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response?.status === 400) {
         return rejectWithValue(error.response.data as ValidationError)
       }
       throw error
@@ -95,7 +95,7 @@ export const archiveUser = createAsyncThunk<{ id: string }, string, { rejectValu
       await axiosAPI.patch(`/users/${ userId }/archive`)
       return { id: userId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -110,7 +110,7 @@ export const unarchiveUser = createAsyncThunk<{ id: string }, string, { rejectVa
       await axiosAPI.patch(`/users/${ userId }/unarchive`)
       return { id: userId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -124,7 +124,7 @@ export const deleteUser = createAsyncThunk<void, string, { rejectValue: GlobalEr
     try {
       await axiosAPI.delete(`/users/${ userId }`)
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -138,7 +138,7 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: GlobalErro
     try {
       await axiosAPI.delete('/users/sessions')
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e

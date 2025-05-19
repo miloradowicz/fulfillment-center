@@ -15,7 +15,6 @@ import {
 import { useNavigate, useParams } from 'react-router-dom'
 import { UserWithPopulate } from '@/types'
 import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers'
-import { isAxiosError } from 'axios'
 import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const useUserActions = (fetchOnDelete: boolean) => {

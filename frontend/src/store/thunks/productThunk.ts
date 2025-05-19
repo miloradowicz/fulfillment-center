@@ -58,7 +58,7 @@ export const addProduct = createAsyncThunk<Product, ProductMutation, { rejectVal
       const response = await axiosAPI.post('/products', productData)
       return response.data
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response?.status === 400) {
         return rejectWithValue(e.response.data as ValidationError)
       }
       throw e
@@ -73,7 +73,7 @@ export const archiveProduct = createAsyncThunk<{ id: string }, string, { rejectV
       await axiosAPI.patch(`/products/${ productId }/archive`)
       return { id: productId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -88,7 +88,7 @@ export const unarchiveProduct = createAsyncThunk<{ id: string }, string, { rejec
       await axiosAPI.patch(`/products/${ productId }/unarchive`)
       return { id: productId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -101,7 +101,7 @@ export const deleteProduct = createAsyncThunk<void, string, { rejectValue: Globa
   try {
     await axiosAPI.delete(`/products/${ productId }`)
   } catch (e) {
-    if (isAxiosError(e) && e.response) {
+    if (isAxiosError(e) && e.response && e.response.status !== 401) {
       return rejectWithValue(e.response.data as GlobalError)
     }
     throw e
@@ -114,7 +114,7 @@ export const updateProduct = createAsyncThunk<void, { productId: string; data: P
     try {
       await axiosAPI.put(`/products/${ productId }`, data)
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response?.status === 400) {
         return rejectWithValue(e.response.data as ValidationError)
       }
       throw e
