@@ -14,7 +14,9 @@ import {
 } from '@/store/slices/userSlice'
 import { useNavigate, useParams } from 'react-router-dom'
 import { UserWithPopulate } from '@/types'
-import { hasMessage, isGlobalError } from '@/utils/helpers'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers'
+import { isAxiosError } from 'axios'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const useUserActions = (fetchOnDelete: boolean) => {
   const dispatch = useAppDispatch()
@@ -28,6 +30,7 @@ const useUserActions = (fetchOnDelete: boolean) => {
   const user = useAppSelector(selectSelectedUser)
   const loading = useAppSelector(selectUsersLoading)
   const error = useAppSelector(selectUsersError)
+  const currentUser = useAppSelector(selectUser)
 
   const fetchAllUsers = useCallback(async () => {
     await dispatch(fetchUsers())
@@ -58,7 +61,11 @@ const useUserActions = (fetchOnDelete: boolean) => {
       await dispatch(fetchArchivedUsers())
       toast.success('Пользователь успешно архивирован!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось архивировать пользователя')

@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
 import {
   selectAllArchivedCounterparties, selectLoadingFetchArchive,
 } from '@/store/slices/counterpartySlices.ts'
@@ -11,6 +11,7 @@ import {
   fetchAllArchivedCounterparties,
   unarchiveCounterparty,
 } from '@/store/thunks/counterpartyThunk.ts'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 export const useArchivedCounterpartiesActions = (fetchOnDelete:boolean) => {
   const dispatch = useAppDispatch()
@@ -20,7 +21,7 @@ export const useArchivedCounterpartiesActions = (fetchOnDelete:boolean) => {
   const [counterpartyToActionId, setCounterpartyToActionId] = useState<string | null>(null)
   const [actionType, setActionType] = useState<'delete' | 'unarchive'>('delete')
   const loading = useAppSelector(selectLoadingFetchArchive)
-
+  const currentUser = useAppSelector(selectUser)
 
   const deleteOneCounterparty = async (id: string) => {
     try {
@@ -32,7 +33,11 @@ export const useArchivedCounterpartiesActions = (fetchOnDelete:boolean) => {
       }
       toast.success('Контрагент успешно удален!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось удалить контрагента')
@@ -47,7 +52,11 @@ export const useArchivedCounterpartiesActions = (fetchOnDelete:boolean) => {
       await dispatch(fetchAllArchivedCounterparties())
       toast.success('Контрагент успешно восстановлен!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось восстановить контрагента')

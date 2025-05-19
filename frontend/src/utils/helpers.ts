@@ -22,3 +22,8 @@ export const isServiceCategory = (obj: unknown): obj is ServiceCategory =>
   typeof obj === 'object' && obj !== null &&
   '_id' in obj && typeof obj._id === 'string' &&
   'name' in obj && typeof obj.name === 'string'
+
+export const isAxios401Error = (obj: unknown) =>
+  typeof obj === 'object' && obj !== null &&
+  'name' in obj && typeof obj.name === 'string' && obj.name === 'AxiosError' &&
+  'message' in obj && typeof obj.message === 'string' && obj.message === 'Request failed with status code 401'

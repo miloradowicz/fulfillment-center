@@ -7,13 +7,15 @@ import {
 } from '@/store/slices/arrivalSlice.ts'
 import { archiveArrival, cancelArrival, fetchArrivalByIdWithPopulate } from '@/store/thunks/arrivalThunk.ts'
 import { toast } from 'react-toastify'
-import { hasMessage } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error } from '@/utils/helpers.ts'
 import { ExtendedNavigator, getOS } from '@/utils/getOS.ts'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const useArrivalDetails = () => {
   const { arrivalId } = useParams()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const currentUser = useAppSelector(selectUser)
 
   const arrival = useAppSelector(selectArrivalWithPopulate)
   const loading = useAppSelector(selectLoadingFetchArrival)
@@ -45,7 +47,11 @@ const useArrivalDetails = () => {
         setIsArchived(!isArchived)
         navigate('/arrivals')
       } catch (e) {
-        if (hasMessage(e)) {
+        if (isAxios401Error(e) && currentUser) {
+          toast.error('Другой пользователь зашел в данный аккаунт')
+          dispatch(unsetUser())
+          navigate('/login')
+        } else if (hasMessage(e)) {
           toast.error(e.message || 'Ошибка архивирования')
         } else {
           console.error(e)
@@ -68,7 +74,11 @@ const useArrivalDetails = () => {
         setIsCanceled(!isCanceled)
         navigate('/arrivals')
       } catch (e) {
-        if (hasMessage(e)) {
+        if (isAxios401Error(e) && currentUser) {
+          toast.error('Другой пользователь зашел в данный аккаунт')
+          dispatch(unsetUser())
+          navigate('/login')
+        } else if (hasMessage(e)) {
           toast.error(e.message || 'Ошибка отмены')
         } else {
           console.error(e)

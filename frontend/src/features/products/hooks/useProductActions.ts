@@ -14,7 +14,8 @@ import {
 } from '@/store/slices/productSlice.ts'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ProductWithPopulate } from '@/types'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 
 const useProductActions = (fetchOnDelete: boolean) => {
@@ -25,6 +26,7 @@ const useProductActions = (fetchOnDelete: boolean) => {
   const product = useAppSelector(selectProductWithPopulate)
   const loading = useAppSelector(selectLoadingFetchProduct)
   const error = useAppSelector(selectProductError)
+  const currentUser = useAppSelector(selectUser)
 
   const [open, setOpen] = useState(false)
   const [confirmationOpen, setConfirmationOpen] = useState(false)
@@ -72,7 +74,11 @@ const useProductActions = (fetchOnDelete: boolean) => {
       }
       toast.success('Товар успешно архивирован!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось архивировать товар')

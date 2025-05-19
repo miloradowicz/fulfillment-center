@@ -1,10 +1,15 @@
-import { useAppDispatch } from '@/app/hooks.ts'
+import { useAppDispatch, useAppSelector } from '@/app/hooks.ts'
 import { useCallback, useEffect, useState } from 'react'
 import { deleteStock, fetchStocks } from '@/store/thunks/stocksThunk.ts'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
+import { isAxios401Error } from '@/utils/helpers'
 
 export const useStockCard = () => {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
@@ -28,6 +33,11 @@ export const useStockCard = () => {
         toast.info('Вы отменили удаление склада.')
       }
     } catch (e) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      }
       console.error(e)
     }
   }

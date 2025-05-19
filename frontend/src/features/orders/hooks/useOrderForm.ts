@@ -15,10 +15,10 @@ import {
   updateOrder,
 } from '@/store/thunks/orderThunk.ts'
 import dayjs from 'dayjs'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { selectAllStocks, selectOneStock } from '@/store/slices/stocksSlice.ts'
 import { fetchStockById, fetchStocks } from '@/store/thunks/stocksThunk.ts'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
 import { deleteFile } from '@/store/thunks/deleteFileThunk.ts'
 import { useFileDeleteWithModal } from '@/hooks/UseFileRemoval.ts'
 import { selectAllServices } from '@/store/slices/serviceSlice.ts'
@@ -30,6 +30,7 @@ import { normalizeField } from '@/utils/normalizeField.ts'
 import { ItemType } from '@/constants.ts'
 import { getAvailableItems } from '@/utils/getAvailableItems.ts'
 import { PopoverType } from '@/components/CustomSelect/CustomSelect.tsx'
+import { selectUser, unsetUser } from '@/store/slices/authSlice.ts'
 
 export const useOrderForm = (initialData?: OrderData, onSuccess?: () => void) => {
   const [form, setForm] = useState<OrderMutation>(
@@ -80,6 +81,8 @@ export const useOrderForm = (initialData?: OrderData, onSuccess?: () => void) =>
   const stock = useAppSelector(selectOneStock)
   const error = useAppSelector(selectCreateOrderError)
   const services = useAppSelector(selectAllServices)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   useEffect(() => {
     dispatch(fetchClients())
@@ -335,7 +338,11 @@ export const useOrderForm = (initialData?: OrderData, onSuccess?: () => void) =>
       setDefectForm([])
       onSuccess?.()
     } catch (e) {
-      if (isGlobalError(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e)) {
         toast.error(e.message)
       } else if (hasMessage(e)) {
         toast.error(e.message)

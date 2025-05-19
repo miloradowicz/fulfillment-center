@@ -7,12 +7,17 @@ import { clearStockError, selectIsStockCreating, selectStockCreateError } from '
 import { fetchProducts } from '@/store/thunks/productThunk.ts'
 import { toast } from 'react-toastify'
 import { addStock, fetchStockById, fetchStocks, updateStock } from '@/store/thunks/stocksThunk.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice.ts'
+import { isAxios401Error } from '@/utils/helpers.ts'
 
 export const useStockForm = (initialData?: Stock, onSuccess?: () => void) => {
   const dispatch = useAppDispatch()
   const products = useAppSelector(selectAllProducts)
   const error = useAppSelector(selectStockCreateError)
   const isLoading = useAppSelector(selectIsStockCreating)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const [form, setForm] = useState<StockMutation>(
     initialData
@@ -65,6 +70,11 @@ export const useStockForm = (initialData?: Stock, onSuccess?: () => void) => {
       setErrors({ ...initialErrorState })
       onSuccess?.()
     } catch (e) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      }
       console.error(e)
     }
   }

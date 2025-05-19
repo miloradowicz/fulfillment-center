@@ -6,7 +6,9 @@ import {
 } from '@/store/slices/userSlice.ts'
 import { deleteUser, fetchArchivedUsers, unarchiveUser } from '@/store/thunks/userThunk.ts'
 import { toast } from 'react-toastify'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const useArchivedUsersActions = () => {
   const dispatch = useAppDispatch()
@@ -15,6 +17,8 @@ const useArchivedUsersActions = () => {
   const [actionType, setActionType] = useState<'delete' | 'unarchive'>('delete')
   const users = useAppSelector(selectAllArchivedUsers)
   const loading = useAppSelector(selectUsersLoading)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const deleteOneUser = async (id: string) => {
     try {
@@ -22,7 +26,11 @@ const useArchivedUsersActions = () => {
       await dispatch(fetchArchivedUsers())
       toast.success('Пользователь успешно удален!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось удалить пользователя')
@@ -37,7 +45,11 @@ const useArchivedUsersActions = () => {
       await dispatch(fetchArchivedUsers())
       toast.success('Пользователь успешно восстановлен!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось восстановить пользователя')
