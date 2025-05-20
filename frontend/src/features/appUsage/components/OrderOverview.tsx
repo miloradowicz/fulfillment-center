@@ -1,12 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useAppSelector } from '@/app/hooks.ts'
+import { selectUser } from '@/store/slices/authSlice.ts'
+import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
 
 const images = [
   '/app-usage/orders/orders-list.png',
   '/app-usage/orders/orders-form.png',
   '/app-usage/orders/orders-details.png',
+  '/app-usage/orders/orders-list(SW).png',
+  '/app-usage/orders/orders-details(SW).png',
 ]
 
 const OrderOverview = () => {
+  const user = useAppSelector(selectUser)
+
   return (
     <Card className="rounded-2xl shadow-md">
       <CardHeader>
@@ -31,24 +38,26 @@ const OrderOverview = () => {
             <li>Статусу доставки</li>
             <li>Статусу оплаты</li>
           </ul>
-          <p className="mt-2">
-            Доступные действия:
-          </p>
-          <ul className="list-disc pl-5">
-            <li><strong>«Подробнее»</strong> — детальная информация о заказе</li>
-            <li><strong>«Редактировать»</strong> — изменение данных заказа</li>
-            <li><strong>«Архивировать»</strong> — перемещение в архив</li>
-            <li><strong>«Отменить»</strong> — при ошибочном создании поставки, удаляет ее из системы</li>
-          </ul>
-          <p className="mt-2">
-            Для удобства на главной странице были добавлены кнопки вызова форм:
-          </p>
-          <ul className="list-disc pl-5">
-            <li><strong>«Добавить заказ»</strong> — создание нового заказа</li>
-            <li><strong>«Выставить счет»</strong> — формирование платежного документа</li>
-          </ul>
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']} >
+            <p className="mt-2">
+              Доступные действия:
+            </p>
+            <ul className="list-disc pl-5">
+              <li><strong>«Подробнее»</strong> — детальная информация о заказе</li>
+              <li><strong>«Редактировать»</strong> — изменение данных заказа</li>
+              <li><strong>«Архивировать»</strong> — перемещение в архив</li>
+              <li><strong>«Отменить»</strong> — при ошибочном создании поставки, удаляет ее из системы</li>
+            </ul>
+            <p className="mt-2">
+              Для удобства на главной странице были добавлены кнопки вызова форм:
+            </p>
+            <ul className="list-disc pl-5">
+              <li><strong>«Добавить заказ»</strong> — создание нового заказа</li>
+              <li><strong>«Выставить счет»</strong> — формирование платежного документа</li>
+            </ul>
+          </ProtectedElement>
           <img
-            src={images[0]}
+            src={user?.role === 'stock-worker' ? images[3] : images[0]}
             alt="Список заказов"
             className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
           />
@@ -68,79 +77,80 @@ const OrderOverview = () => {
             </li>
           </ul>
           <img
-            src={images[2]}
+            src={user?.role === 'stock-worker' ? images[4] : images[2]}
             alt="Детали заказа"
             className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
           />
         </div>
+        <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']} >
+          <div>
+            <h3 className="font-semibold">Создание и редактирование</h3>
+            <p>
+              Форма включает разделы:
+            </p>
+            <ul className="list-disc pl-5 space-y-1 mt-2">
+              <li><strong>Обязательные поля</strong> — клиент, склад, даты, статус</li>
+              <li><strong>Товарный состав</strong> — выбор из каталога клиента с указанием количества</li>
+              <li><strong>Дефекты</strong> — регистрация брака с описанием проблем</li>
+              <li><strong>Услуги</strong> — дополнительные услуги с настраиваемой стоимостью</li>
+              <li><strong>Документы</strong> — загрузка файлов (PDF, Word, Excel до 10МБ)</li>
+              <li><strong>Комментарии</strong> — внутренние заметки</li>
+            </ul>
+            <img
+              src={images[1]}
+              alt="Форма заказа"
+              className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
+            />
+          </div>
 
-        <div>
-          <h3 className="font-semibold">Создание и редактирование</h3>
-          <p>
-            Форма включает разделы:
-          </p>
-          <ul className="list-disc pl-5 space-y-1 mt-2">
-            <li><strong>Обязательные поля</strong> — клиент, склад, даты, статус</li>
-            <li><strong>Товарный состав</strong> — выбор из каталога клиента с указанием количества</li>
-            <li><strong>Дефекты</strong> — регистрация брака с описанием проблем</li>
-            <li><strong>Услуги</strong> — дополнительные услуги с настраиваемой стоимостью</li>
-            <li><strong>Документы</strong> — загрузка файлов (PDF, Word, Excel до 10МБ)</li>
-            <li><strong>Комментарии</strong> — внутренние заметки</li>
-          </ul>
-          <img
-            src={images[1]}
-            alt="Форма заказа"
-            className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
-          />
-        </div>
+          <div>
+            <h3 className="font-semibold">Жизненный цикл заказа</h3>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li>
+                <strong>Формирование</strong>
+                <ul className="list-disc pl-5 mt-1">
+                  <li>Выбор товаров из каталога клиента</li>
+                  <li>Указание точных количеств</li>
+                  <li>Назначение склада отгрузки</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Обработка</strong>
+                <ul className="list-disc pl-5 mt-1">
+                  <li>Автоматическое резервирование товаров</li>
+                  <li>Формирование сопроводительных документов</li>
+                  <li>Контроль оплаты (полной/частичной)</li>
+                </ul>
+              </li>
+              <li>
+                <strong>Исполнение</strong>
+                <ul className="list-disc pl-5 mt-1">
+                  <li>Отметка о фактической отгрузке</li>
+                  <li>Фиксация дефектов при приемке</li>
+                  <li>Закрытие заказа после доставки</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
 
-        <div>
-          <h3 className="font-semibold">Жизненный цикл заказа</h3>
-          <ol className="list-decimal pl-5 space-y-2">
-            <li>
-              <strong>Формирование</strong>
-              <ul className="list-disc pl-5 mt-1">
-                <li>Выбор товаров из каталога клиента</li>
-                <li>Указание точных количеств</li>
-                <li>Назначение склада отгрузки</li>
-              </ul>
-            </li>
-            <li>
-              <strong>Обработка</strong>
-              <ul className="list-disc pl-5 mt-1">
-                <li>Автоматическое резервирование товаров</li>
-                <li>Формирование сопроводительных документов</li>
-                <li>Контроль оплаты (полной/частичной)</li>
-              </ul>
-            </li>
-            <li>
-              <strong>Исполнение</strong>
-              <ul className="list-disc pl-5 mt-1">
-                <li>Отметка о фактической отгрузке</li>
-                <li>Фиксация дефектов при приемке</li>
-                <li>Закрытие заказа после доставки</li>
-              </ul>
-            </li>
-          </ol>
-        </div>
+          <div>
+            <h3 className="font-semibold">Архивация</h3>
+            <p>
+              Неактуальные заказы можно архивировать (кнопка <strong>«Архивировать»</strong>). Такие заказы
+              перемещаются в архив и исключаются из основного списка. Важно отметить, что архивировать можно только
+              заказы со статусом «Доставлен» и полностью оплаченные.
+            </p>
+          </div>
 
-        <div>
-          <h3 className="font-semibold">Архивация</h3>
-          <p>
-            Неактуальные заказы можно архивировать (кнопка <strong>«Архивировать»</strong>). Такие заказы
-            перемещаются в архив и исключаются из основного списка. Важно отметить, что архивировать можно только
-            заказы со статусом «Доставлен» и полностью оплаченные.
-          </p>
-        </div>
-
-        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <h3 className="font-semibold text-blue-800">Ключевые особенности</h3>
-          <ul className="list-disc pl-5 text-blue-700 space-y-1">
-            <li>Двухэтапный контроль статусов (доставки и оплаты)</li>
-            <li>Гибкое управление услугами с возможностью переопределения цен</li>
-            <li>Все изменения фиксируются в истории</li>
-          </ul>
-        </div>
+          <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h3 className="font-semibold text-blue-800">Ключевые особенности</h3>
+            <ul className="list-disc pl-5 text-blue-700 space-y-1">
+              <li>Двухэтапный контроль статусов (доставки и оплаты)</li>
+              <li>Гибкое управление услугами с возможностью переопределения цен</li>
+              <li>Все изменения фиксируются в истории</li>
+            </ul>
+          </div>
+        </ProtectedElement>
       </CardContent>
     </Card>
   )

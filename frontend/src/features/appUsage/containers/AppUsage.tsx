@@ -16,6 +16,7 @@ import ReportOverview from '@/features/appUsage/components/ReportOverview.tsx'
 import TaskOverview from '@/features/appUsage/components/TaskOverview.tsx'
 import StockOverview from '@/features/appUsage/components/StockOverview.tsx'
 import AdminPanelOverview from '@/features/appUsage/components/AdminPanelOverview.tsx'
+import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
@@ -51,16 +52,46 @@ const AppUsage = () =>  {
         <TabsList className="mb-5 w-full h-auto">
           <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto">
             <TabsTrigger className={tabTriggerStyles} value="general">Общее</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="clients">Клиенты</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="products">Товары</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles}  value="arrivals">Поставки</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="orders">Заказы</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="tasks">Задачи</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="reports">Отчеты</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="stocks">Склады</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="counterparties">Контрагенты</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="archive">Архив</TabsTrigger>
-            <TabsTrigger className={tabTriggerStyles} value="admin-panel">Админ панель</TabsTrigger>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+              <TabsTrigger className={tabTriggerStyles} value="clients">Клиенты</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+              <TabsTrigger className={tabTriggerStyles} value="products">Товары</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
+              <TabsTrigger className={tabTriggerStyles} value="arrivals">Поставки</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
+              <TabsTrigger className={tabTriggerStyles} value="orders">Заказы</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
+              <TabsTrigger className={tabTriggerStyles} value="tasks">Задачи</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+              <TabsTrigger className={tabTriggerStyles} value="reports">Отчеты</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+              <TabsTrigger className={tabTriggerStyles} value="stocks">Склады</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+              <TabsTrigger className={tabTriggerStyles} value="counterparties">Контрагенты</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+              <TabsTrigger className={tabTriggerStyles} value="archive">Архив</TabsTrigger>
+            </ProtectedElement>
+
+            <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+              <TabsTrigger className={tabTriggerStyles} value="admin-panel">Админ панель</TabsTrigger>
+            </ProtectedElement>
           </div>
         </TabsList>
 
@@ -69,43 +100,63 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="clients">
-          <ClientOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+            <ClientOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="products">
-          <ProductOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+            <ProductOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="arrivals">
-          <ArrivalOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
+            <ArrivalOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="orders">
-          <OrderOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
+            <OrderOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="tasks">
-          <TaskOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
+            <TaskOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="reports">
-          <ReportOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+            <ReportOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="stocks">
-          <StockOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+            <StockOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="counterparties">
-          <CounterpartyOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+            <CounterpartyOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="archive">
-          <ArchiveOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+            <ArchiveOverview />
+          </ProtectedElement>
         </TabsContent>
 
         <TabsContent value="admin-panel">
-          <AdminPanelOverview />
+          <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+            <AdminPanelOverview />
+          </ProtectedElement>
         </TabsContent>
       </Tabs>
     </div>

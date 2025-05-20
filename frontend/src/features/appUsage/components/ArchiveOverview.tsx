@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
 
 const images = [
   '/app-usage/archive/archive-main.png',
@@ -63,7 +64,9 @@ const ArchiveOverview = () => {
           </p>
           <ul className="list-disc pl-5">
             <li><strong>«Восстановить»</strong> — возвращает сущность в основной список</li>
-            <li><strong>«Удалить»</strong> — полностью удаляет запись из системы</li>
+            <ProtectedElement allowedRoles={['super-admin']}>
+              <li><strong>«Удалить»</strong> — полностью удаляет запись из системы</li>
+            </ProtectedElement>
           </ul>
         </div>
 
@@ -74,7 +77,9 @@ const ArchiveOverview = () => {
           </p>
           <ul className="list-disc pl-5">
             <li>Для восстановления — подтверждение переноса в основной список</li>
-            <li>Для удаления — предупреждение о безвозвратном удалении данных</li>
+            <ProtectedElement allowedRoles={['super-admin']}>
+              <li>Для удаления — предупреждение о безвозвратном удалении данных</li>
+            </ProtectedElement>
           </ul>
         </div>
 
@@ -82,7 +87,9 @@ const ArchiveOverview = () => {
           <h3 className="font-semibold text-blue-800">Особенности работы</h3>
           <ul className="list-disc pl-5 text-blue-700 space-y-1">
             <li>Восстановленные данные появляются в своих основных разделах</li>
-            <li>Удаленные данные невозможно восстановить</li>
+            <ProtectedElement allowedRoles={['super-admin']}>
+              <li>Удаленные данные невозможно восстановить</li>
+            </ProtectedElement>
           </ul>
         </div>
       </CardContent>
