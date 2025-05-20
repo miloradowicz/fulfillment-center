@@ -27,7 +27,6 @@ export type ErrorMessages = Pick<
   ErrorsFields,
   'client'
   | 'product'
-  | 'price'
   | 'stock'
   | 'amount'
   | 'defect_description'
