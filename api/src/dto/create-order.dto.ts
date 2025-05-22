@@ -84,11 +84,6 @@ export class CreateOrderDto {
   @Type(() => ProductDto)
   products: ProductDto[]
 
-  @IsNotEmpty({ message: 'Поле сумма заказа обязательно для заполнения' })
-  @IsInt({ message: 'Поле сумма заказа должно являться числом' })
-  @IsPositive({ message: 'Поле сумма заказа не может равняться 0' })
-  price: number
-
   @IsNotEmpty({ message: 'Поле дата отправки обязательно для заполнения' })
   @IsDate({ message: 'Заполните дату отправки' })
   @Type(() => Date)

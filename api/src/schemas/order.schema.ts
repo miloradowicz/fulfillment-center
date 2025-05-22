@@ -49,9 +49,6 @@ export class Order {
   }[]
 
   @Prop({ required: true })
-  price: number
-
-  @Prop({ required: true })
   sent_at: Date
 
   @Prop({ type: String, required: false, default: null })

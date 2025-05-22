@@ -38,7 +38,6 @@ export const useOrderForm = (initialData?: OrderData, onSuccess?: () => void) =>
         client: initialData.client._id,
         sent_at: dayjs(initialData.sent_at).format('YYYY-MM-DD'),
         delivered_at: initialData.delivered_at ? dayjs(initialData.delivered_at).format('YYYY-MM-DD') : '',
-        price: initialData.price,
         stock: initialData.stock._id,
         products: [],
         defects: [],
@@ -229,7 +228,6 @@ export const useOrderForm = (initialData?: OrderData, onSuccess?: () => void) =>
       client: !value ? ErrorMessagesList.ClientErr : ErrorMessagesList.Default,
       sent_at: !value ? ErrorMessagesList.SentAtDate : ErrorMessagesList.Default,
       stock: !value ? ErrorMessagesList.StockErr : ErrorMessagesList.Default,
-      price: Number(value) <= 0 ? ErrorMessagesList.OrderPrice : ErrorMessagesList.Default,
       service: !value ? ErrorMessagesList.ServiceName : ErrorMessagesList.Default,
       service_amount: Number(value) <= 0 ? ErrorMessagesList.ServiceAmount : ErrorMessagesList.Default,
     }
