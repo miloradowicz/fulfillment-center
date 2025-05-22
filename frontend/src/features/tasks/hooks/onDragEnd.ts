@@ -5,10 +5,6 @@ import { updateTaskStatus } from '@/store/thunks/tasksThunk.ts'
 import { DragEndEvent, UniqueIdentifier } from '@dnd-kit/core'
 import dayjs from 'dayjs'
 import { toast } from 'react-toastify'
-import { useNavigate } from 'react-router-dom'
-import { selectUser, unsetUser } from '@/store/slices/authSlice'
-import { useAppSelector } from '@/app/hooks'
-import { isAxios401Error } from '@/utils/helpers'
 
 interface DragEndProps {
   e: DragEndEvent;
@@ -60,8 +56,7 @@ export const onDragEnd = async ({
   if (!taskData) return
 
   const { _id, parent } = taskData
-  const navigate = useNavigate()
-  const currentUser = useAppSelector(selectUser)
+
 
   if (parent === e.over?.id) {
     setTodoItems(prevTodoItems)
@@ -177,11 +172,6 @@ export const onDragEnd = async ({
         data: updatedData,
       }))
     } catch (error) {
-      if (isAxios401Error(error) && currentUser) {
-        toast.error('Другой пользователь зашел в данный аккаунт')
-        dispatch(unsetUser())
-        navigate('/login')
-      }
       console.error('Ошибка при обновлении задачи:', error)
       toast.error('Ошибка при обновлении задачи')
     }
