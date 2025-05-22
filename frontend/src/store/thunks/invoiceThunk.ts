@@ -37,7 +37,7 @@ export const createInvoices = createAsyncThunk<void, InvoiceMutation, { rejectVa
       const response = await axiosAPI.post('/invoices', data)
       return response.data
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response?.status === 400) {
         return rejectWithValue(e.response.data as ValidationError)
       }
       throw e
@@ -52,7 +52,7 @@ export const archiveInvoice = createAsyncThunk<{id:string}, string, { rejectValu
       await axiosAPI.patch(`/invoices/${ invoiceId }/archive`)
       return { id: invoiceId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -67,7 +67,7 @@ export const unarchiveInvoice = createAsyncThunk<{id:string}, string, { rejectVa
       await axiosAPI.patch(`/invoices/${ invoiceId }/unarchive`)
       return { id: invoiceId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -80,7 +80,7 @@ export const deleteInvoice = createAsyncThunk<void, string, { rejectValue: Globa
   try {
     await axiosAPI.delete(`/invoices/${ invoiceId }`)
   } catch (e) {
-    if (isAxiosError(e) && e.response) {
+    if (isAxiosError(e) && e.response && e.response.status !== 401) {
       return rejectWithValue(e.response.data as GlobalError)
     }
     throw e
@@ -94,7 +94,7 @@ export const updateInvoice = createAsyncThunk<void, { id: string; data: InvoiceM
       const response = await axiosAPI.put(`/invoices/${ id }`, data)
       return response.data
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response?.status === 400) {
         return rejectWithValue(e.response.data as ValidationError)
       }
       throw e

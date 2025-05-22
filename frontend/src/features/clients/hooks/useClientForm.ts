@@ -12,7 +12,9 @@ import {
 import { addClient, fetchClientById, fetchClients, updateClient } from '@/store/thunks/clientThunk.ts'
 import { emailRegex, initialClientState, phoneNumberRegex } from '@/constants.ts'
 import { ClientMutation } from '@/types'
-import { isValidationError } from '@/utils/helpers.ts'
+import { isAxios401Error, isValidationError } from '@/utils/helpers.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const requiredFields: (keyof ClientMutation)[] = ['name', 'email', 'phone_number', 'inn']
 
@@ -26,6 +28,8 @@ export const useClientForm = (clientId?: string, onClose?: () => void) => {
   const creationAndModificationError = useAppSelector(selectClientCreationAndModificationError)
   const client = useAppSelector(selectClient)
   const clients = useAppSelector(selectAllClients) || []
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   useEffect(() => {
     if (clientId) {
@@ -137,8 +141,14 @@ export const useClientForm = (clientId?: string, onClose?: () => void) => {
       setErrors({})
       if (onClose) onClose()
     } catch (error) {
-      console.error(error)
-      toast.error(clientId ? 'Не удалось обновить клиента' : 'Не удалось создать клиента')
+      if (isAxios401Error(error) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        console.error(error)
+        toast.error(clientId ? 'Не удалось обновить клиента' : 'Не удалось создать клиента')
+      }
     }
   }
 

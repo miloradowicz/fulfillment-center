@@ -85,7 +85,7 @@ export const archiveArrival = createAsyncThunk<{ id: string }, string, { rejectV
       await axiosAPI.patch(`/arrivals/${ arrivalId }/archive`)
       return { id: arrivalId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -100,7 +100,7 @@ export const unarchiveArrival = createAsyncThunk<{ id: string }, string, { rejec
       await axiosAPI.patch(`/arrivals/${ arrivalId }/unarchive`)
       return { id: arrivalId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -114,7 +114,7 @@ export const cancelArrival = createAsyncThunk<void, string, { rejectValue: Globa
     try {
       await axiosAPI.delete(`/arrivals/${ arrivalId }/cancel`)
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -128,7 +128,7 @@ export const deleteArrival = createAsyncThunk<void, string, { rejectValue: Globa
     try {
       await axiosAPI.delete(`/arrivals/${ arrivalId }`)
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e

@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks.ts'
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate, useParams } from 'react-router-dom'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
 import { Service } from '@/types'
 import { archiveService, fetchServiceById, fetchServices } from '@/store/thunks/serviceThunk.ts'
 import {
@@ -12,6 +12,7 @@ import {
   selectService,
   selectServiceError,
 } from '@/store/slices/serviceSlice.ts'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 export const useServiceActions = (fetchOnDelete: boolean) => {
   const dispatch = useAppDispatch()
@@ -26,6 +27,7 @@ export const useServiceActions = (fetchOnDelete: boolean) => {
   const service = useAppSelector(selectService)
   const error = useAppSelector(selectServiceError)
   const loading = useAppSelector(selectLoadingFetchService)
+  const currentUser = useAppSelector(selectUser)
 
   const [openDetailsModal, setOpenDetailsModal] = useState(false)
 
@@ -74,7 +76,11 @@ export const useServiceActions = (fetchOnDelete: boolean) => {
       }
       toast.success('Услуга успешно архивирована!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось архивировать услугу')

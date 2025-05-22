@@ -73,7 +73,7 @@ export const deleteTask = createAsyncThunk<void, string, { rejectValue: GlobalEr
     try {
       await axiosAPI.delete(`/tasks/${ taskId }`)
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -96,7 +96,7 @@ export const unarchiveTask = createAsyncThunk<{ id: string }, string, { rejectVa
       await axiosAPI.patch(`/tasks/${ taskId }/unarchive`)
       return { id: taskId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -113,7 +113,7 @@ export const updateTask = createAsyncThunk<
   try {
     await axiosAPI.put(`/tasks/${ taskId }`, data)
   } catch (e) {
-    if (isAxiosError(e) && e.response) {
+    if (isAxiosError(e) && e.response && e.response.status !== 401) {
       return rejectWithValue(e.response.data as GlobalError)
     }
     throw e
@@ -126,7 +126,7 @@ export const updateTaskStatus = createAsyncThunk<void, { taskId: string; data: T
     try {
       await axiosAPI.patch(`/tasks/${ taskId }/status`, data)
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e

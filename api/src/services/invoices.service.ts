@@ -189,7 +189,7 @@ export class InvoicesService {
       servicesToUse.map(async item => {
         const serviceDoc = await this.serviceModel.findById(item.service).lean()
         if (!serviceDoc) {
-          throw new Error(`Услуга с ID  ${ item.service.toString() } не найдена`)
+          throw new NotFoundException(`Услуга с ID  ${ item.service.toString() } не найдена`)
         }
         return {
           ...item,
@@ -231,7 +231,7 @@ export class InvoicesService {
       servicesToUse.map(async item => {
         const serviceDoc = await this.serviceModel.findById(item.service).lean()
         if (!serviceDoc) {
-          throw new Error(`Услуга с ID ${ item.service.toString() } не найдена`)
+          throw new NotFoundException(`Услуга с ID ${ item.service.toString() } не найдена`)
         }
         return {
           ...item,

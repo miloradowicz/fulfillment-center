@@ -50,7 +50,7 @@ export const archiveClient = createAsyncThunk<{ id: string }, string, { rejectVa
       await axiosAPI.patch(`/clients/${ clientId }/archive`)
       return { id: clientId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -65,7 +65,7 @@ export const unarchiveClient = createAsyncThunk<{ id: string }, string, { reject
       await axiosAPI.patch(`/clients/${ clientId }/unarchive`)
       return { id: clientId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -78,7 +78,7 @@ export const deleteClient = createAsyncThunk<void, string, { rejectValue: Global
   try {
     await axiosAPI.delete(`/clients/${ clientId }`)
   } catch (e) {
-    if (isAxiosError(e) && e.response) {
+    if (isAxiosError(e) && e.response && e.response.status !== 401) {
       return rejectWithValue(e.response.data as GlobalError)
     }
     throw e
@@ -93,7 +93,7 @@ export const updateClient = createAsyncThunk<void, { clientId: string; data: Cli
     } catch (e) {
       if (isAxiosError(e) && e.response && e.response.status === 400) {
         return rejectWithValue(e.response.data as ValidationError)
-      } else if (isAxiosError(e) && e.response && 'message' in e.response.data) {
+      } else if (isAxiosError(e) && e.response && 'message' in e.response.data && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e

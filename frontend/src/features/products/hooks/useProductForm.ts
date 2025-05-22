@@ -13,6 +13,9 @@ import {
 import { ErrorMessagesList } from '@/messages.ts'
 import { PopoverType } from '@/components/CustomSelect/CustomSelect'
 import { dynamicFieldState, ErrorProduct, initialErrorProductState, initialProductState } from '../utils/ProductStateAndTypes.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice.ts'
+import { isAxios401Error } from '@/utils/helpers.ts'
 
 const useProductForm = (initialData?: ProductWithPopulate, onSuccess?: () => void) => {
   const [form, setForm] = useState<ProductMutation>(
@@ -45,6 +48,8 @@ const useProductForm = (initialData?: ProductWithPopulate, onSuccess?: () => voi
   const loadingAdd = useAppSelector(selectLoadingAddProduct)
   const loadingUpdate = useAppSelector(selectLoadingUpdateProduct)
   const createError = useAppSelector(selectCreateProductError)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   useEffect(() => {
     dispatch(fetchClients())
@@ -119,6 +124,11 @@ const useProductForm = (initialData?: ProductWithPopulate, onSuccess?: () => voi
       setErrors({})
       setErrorsBlur(initialErrorProductState)
     } catch (e) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      }
       console.error(e)
     }
   }

@@ -14,7 +14,9 @@ import {
 import { toast } from 'react-toastify'
 import { OrderWithClient } from '@/types'
 import { FormType } from '@/features/orders/state/orderState.ts'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const UseOrderPage = () => {
   const dispatch = useAppDispatch()
@@ -25,6 +27,8 @@ const UseOrderPage = () => {
   const [counterpartyToDelete, setCounterpartyToDelete] = useState<OrderWithClient | null>(null)
   const [orderToEdit, setOrderToEdit] = useState<OrderWithClient | undefined>(undefined)
   const error = useAppSelector(selectOrderError)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   useEffect(() => {
     dispatch(fetchOrdersWithClient())
@@ -37,7 +41,11 @@ const UseOrderPage = () => {
       toast.success('Заказ успешно архивирован!')
       dispatch(fetchArchivedOrders())
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось архивировать заказ')
@@ -53,8 +61,14 @@ const UseOrderPage = () => {
       toast.success('Заказ успешно отменен!')
       dispatch(fetchArchivedOrders())
     } catch (e) {
-      toast.error('Ошибка при отмене заказа.')
-      console.error(e)
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        toast.error('Ошибка при отмене заказа.')
+        console.error(e)
+      }
     }
   }
 

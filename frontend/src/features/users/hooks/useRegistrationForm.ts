@@ -3,9 +3,11 @@ import React, { useEffect, useState, ChangeEvent } from 'react'
 import { toast } from 'react-toastify'
 import { useAppDispatch, useAppSelector } from '@/app/hooks.ts'
 import { passwordStrengthOptions, emailRegex, roles } from '@/constants.ts'
-import { selectCreateError, selectLoadingRegisterUser, clearCreateError } from '@/store/slices/authSlice.ts'
+import { selectCreateError, selectLoadingRegisterUser, clearCreateError, selectUser, unsetUser } from '@/store/slices/authSlice.ts'
 import { fetchUsers, registerUser, updateUser } from '@/store/thunks/userThunk.ts'
 import { UserRegistrationMutation, UserUpdateMutation } from '@/types'
+import { useNavigate } from 'react-router-dom'
+import { isAxios401Error } from '@/utils/helpers'
 
 type UserMutation = Omit<UserUpdateMutation, '_id'>
 type FormType = UserRegistrationMutation | (Omit<UserRegistrationMutation, 'role'> & { role: '' })
@@ -32,6 +34,9 @@ export const useRegistrationForm = (
   const [form, setForm] = useState<FormType>({ ...initialState, ...initialFormData })
   const [confirmPassword, setConfirmPassword] = useState('')
 
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
+  
   const isEditMode = !!initialFormData?._id
 
   useEffect(() => {
@@ -101,8 +106,14 @@ export const useRegistrationForm = (
       dispatch(clearCreateError())
       setFrontendError({})
       onSuccess?.()
-    } catch {
-      toast.error('Произошла ошибка при сохранении пользователя.')
+    } catch (e) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        toast.error('Произошла ошибка при сохранении пользователя.')
+      }
     }
   }
 

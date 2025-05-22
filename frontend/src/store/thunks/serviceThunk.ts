@@ -11,7 +11,7 @@ export const fetchServices = createAsyncThunk<PopulatedService[], void, { reject
       const response = await axiosAPI.get('/services')
       return response.data
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response && error.response.status !== 401) {
         return rejectWithValue(error.response.data as GlobalError)
       }
       throw error
@@ -34,7 +34,7 @@ export const fetchServiceById = createAsyncThunk<PopulatedService, string, { rej
       const response = await axiosAPI.get(`/services/${ id }`)
       return response.data
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response && error.response.status !== 401) {
         return rejectWithValue(error.response.data as GlobalError)
       }
       throw error
@@ -83,7 +83,7 @@ export const archiveService = createAsyncThunk<{ id: string }, string, { rejectV
       await axiosAPI.patch(`/services/${ id }/archive`)
       return { id }
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response && error.response.status !== 401) {
         return rejectWithValue(error.response.data as GlobalError)
       }
       throw error
@@ -98,7 +98,7 @@ export const unarchiveService = createAsyncThunk<{ id: string }, string, { rejec
       await axiosAPI.patch(`/services/${ serviceId }/unarchive`)
       return { id: serviceId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -113,7 +113,7 @@ export const deleteService = createAsyncThunk<{ message: string }, string, { rej
       const response = await axiosAPI.delete(`/services/${ id }`)
       return response.data
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response && error.response.status !== 401) {
         return rejectWithValue(error.response.data as GlobalError)
       }
       throw error

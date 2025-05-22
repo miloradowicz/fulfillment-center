@@ -4,16 +4,18 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { toast } from 'react-toastify'
 import { fetchInvoiceById, archiveInvoice } from '@/store/thunks/invoiceThunk'
 import { selectOneInvoice, selectLoadingFetch } from '@/store/slices/invoiceSlice'
-import { hasMessage } from '@/utils/helpers'
+import { hasMessage, isAxios401Error } from '@/utils/helpers'
 import { saveAs } from 'file-saver'
 import { Service, ServiceType } from '@/types'
 import * as XLSX from 'xlsx-js-style'
 import { formatMoney } from '@/utils/formatMoney.ts'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const useInvoiceDetails = () => {
   const { invoiceId } = useParams()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const invoice = useAppSelector(selectOneInvoice)
   const loading = useAppSelector(selectLoadingFetch)
@@ -59,7 +61,11 @@ const useInvoiceDetails = () => {
         toast.success('Счёт успешно архивирован!')
         navigate('/admin?tab=invoices')
       } catch (e) {
-        if (hasMessage(e)) {
+        if (isAxios401Error(e) && currentUser) {
+          toast.error('Другой пользователь зашел в данный аккаунт')
+          dispatch(unsetUser())
+          navigate('/login')
+        } else if (hasMessage(e)) {
           toast.error(e.message)
         } else {
           console.error(e)
