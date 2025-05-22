@@ -186,6 +186,21 @@ export class ArrivalsService {
     const existingArrival = await this.arrivalModel.findById(id)
     if (!existingArrival) throw new NotFoundException('Поставка не найдена')
 
+    const updateData = { ...arrivalDto }
+
+    const previousStatus = existingArrival.arrival_status
+    const newStatus = updateData.arrival_status ?? previousStatus
+
+    if (previousStatus === 'ожидается доставка' && (newStatus === 'отсортирована' || newStatus === 'получена')) {
+      if (!updateData.received_amount?.length) {
+        throw new BadRequestException('Заполните список полученных товаров для смены статуса поставки.')
+      }
+    }
+
+    if (previousStatus === 'получена' && newStatus === 'получена' && !updateData.received_amount?.length) {
+      throw new BadRequestException('Для статуса "получена" укажите полученные товары')
+    }
+
     const arrivalDtoObj = { ...arrivalDto }
 
     arrivalDtoObj.received_amount = arrivalDtoObj.received_amount || []
@@ -209,27 +224,12 @@ export class ArrivalsService {
       arrivalDto.services = []
     }
 
-    const updateData = { ...arrivalDto, services: arrivalDto.services }
-
-    const previousStatus = existingArrival.arrival_status
-    const newStatus = updateData.arrival_status ?? previousStatus
-
     this.stockManipulationService.init()
-
-    if (previousStatus === 'ожидается доставка' && (newStatus === 'отсортирована' || newStatus === 'получена')) {
-      if (!updateData.received_amount?.length) {
-        throw new BadRequestException('Заполните список полученных товаров для смены статуса поставки.')
-      }
-    }
-
-    if (previousStatus === 'получена' && newStatus === 'получена' && !updateData.received_amount?.length) {
-      throw new BadRequestException('Для статуса "получена" укажите полученные товары')
-    }
 
     const previousStock = existingArrival.stock
     await this.undoStocking(existingArrival)
 
-    const updatedArrival = existingArrival.set(updateData)
+    const updatedArrival = existingArrival.set( { ...new CreateArrivalDto(), ...updateData })
     const newStock = updatedArrival.stock
     await this.doStocking(updatedArrival)
 
