@@ -16,13 +16,15 @@ dayjs.locale('ru')
 
 const AppWithErrorBoundary = ErrorBoundary(App)
 
-addCsrf()
-checkAuthentication(store)
-  .then(() => createRoot(document.getElementById('root')!).render(
-    <Provider store={store}>
-      <ToastContainer position={'top-center'} />
-      <BrowserRouter>
-        <AppWithErrorBoundary />
-      </BrowserRouter>
-    </Provider>,
-  ))
+addCsrf().then(() =>
+  checkAuthentication(store).then(() =>
+    createRoot(document.getElementById('root')!).render(
+      <Provider store={store}>
+        <ToastContainer position={'top-center'} />
+        <BrowserRouter>
+          <AppWithErrorBoundary />
+        </BrowserRouter>
+      </Provider>,
+    ),
+  ),
+)

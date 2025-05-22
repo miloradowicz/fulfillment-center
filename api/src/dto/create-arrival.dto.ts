@@ -103,10 +103,10 @@ export class CreateArrivalDto {
   pickup_location: string
 
   @IsOptional()
-  shipping_agent?: mongoose.Types.ObjectId | null
+  shipping_agent?: mongoose.Types.ObjectId | null = undefined
 
   @IsOptional()
-  documents?: Array<{ document: string }> | string[] | string
+  documents?: Array<{ document: string }> | string[] | string = undefined
 
   @IsOptional()
   @IsEnum(['ожидается доставка', 'получена', 'отсортирована'], {
@@ -124,19 +124,19 @@ export class CreateArrivalDto {
   @IsArray({ message: 'Заполните список дефектов.' })
   @ValidateNested({ each: true })
   @Type(() => DefectDto)
-  defects?: DefectDto[]
+  defects?: DefectDto[] = undefined
 
   @IsOptional()
   @IsArray({ message: 'Заполните список полученных товаров.' })
   @ValidateNested({ each: true })
   @Type(() => ReceivedProductDto)
-  received_amount?: ReceivedProductDto[]
+  received_amount?: ReceivedProductDto[] = undefined
 
   @IsOptional()
   @IsArray({ message: 'Заполните список оказанных услуг.' })
   @ValidateNested({ each: true })
   @Type(() => ServiceDto)
-  services?: ServiceDto[]
+  services?: ServiceDto[] = undefined
 
   @IsOptional()
   comment: string
