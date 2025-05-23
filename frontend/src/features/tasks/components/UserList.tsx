@@ -6,7 +6,6 @@ import { UserListProps } from '../hooks/TypesProps'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { getUsersInitials } from '@/utils/getUsersInitials.ts'
 
 const UserList: React.FC<UserListProps> = ({ users, selectedUser, setSelectedUser }) => {
@@ -26,8 +25,6 @@ const UserList: React.FC<UserListProps> = ({ users, selectedUser, setSelectedUse
       await dispatch(fetchTasksByUserIdWithPopulate(userId))
     }
   }
-
-
 
   const user = remainingUsers.find(u => u._id === selectedUser)
 
@@ -118,22 +115,20 @@ const UserList: React.FC<UserListProps> = ({ users, selectedUser, setSelectedUse
                 onValueChange={setSearchTerm}
               />
               <CommandList>
-                <ScrollArea className="h-[200px]">
-                  <CommandEmpty>Пользователи не найдены</CommandEmpty>
-                  {remainingUsers
-                    .filter(user =>
-                      user.displayName.toLowerCase().includes(searchTerm.toLowerCase()),
-                    )
-                    .map(user => (
-                      <CommandItem
-                        key={user._id}
-                        onSelect={() => handleUserClick(user._id)}
-                        className="cursor-pointer"
-                      >
-                        {user.displayName}
-                      </CommandItem>
-                    ))}
-                </ScrollArea>
+                <CommandEmpty>Пользователи не найдены</CommandEmpty>
+                {remainingUsers
+                  .filter(user =>
+                    user.displayName.toLowerCase().includes(searchTerm.toLowerCase()),
+                  )
+                  .map(user => (
+                    <CommandItem
+                      key={user._id}
+                      onSelect={() => handleUserClick(user._id)}
+                      className="cursor-pointer"
+                    >
+                      {user.displayName}
+                    </CommandItem>
+                  ))}
               </CommandList>
             </Command>
           </PopoverContent>
