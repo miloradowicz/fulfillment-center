@@ -1,25 +1,5 @@
-import {
-  IsArray,
-  IsEnum,
-  IsMongoId,
-  IsNotEmpty,
-  IsOptional,
-  ValidateNested,
-} from 'class-validator'
-import { Type } from 'class-transformer'
+import { IsEnum, IsMongoId, IsNotEmpty, IsOptional } from 'class-validator'
 import mongoose from 'mongoose'
-
-class LogDto {
-  @IsNotEmpty({ message: 'Поле пользователь не должно быть пустым.' })
-  @IsMongoId({ message: 'Некорректный формат ID' })
-  user: mongoose.Types.ObjectId
-
-  @IsNotEmpty({ message: 'Поле описание изменения не должно быть пустым.' })
-  change: string
-
-  @IsNotEmpty({ message: 'Поле дата изменения не должно быть пустым.' })
-  date: Date
-}
 
 export class CreateTaskDto {
   @IsNotEmpty({ message: 'Поле исполнитель обязательно для заполнения' })
@@ -59,10 +39,4 @@ export class CreateTaskDto {
   @IsOptional()
   @IsMongoId({ message: 'Некорректный формат ID' })
   associated_arrival?: mongoose.Types.ObjectId | null
-
-  @IsOptional()
-  @IsArray({ message: 'Заполните список логов.' })
-  @ValidateNested({ each: true })
-  @Type(() => LogDto)
-  logs?: LogDto[]
 }
