@@ -84,7 +84,7 @@ const App = () => {
           <Route
             path="/products"
             element={
-              <AllowedRoute allowedRoles={['super-admin', 'admin', 'manager']}>
+              <AllowedRoute allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
                 <ProductPage />
               </AllowedRoute>
             }
@@ -93,7 +93,7 @@ const App = () => {
           <Route
             path="/products/:productId"
             element={
-              <AllowedRoute allowedRoles={['super-admin', 'admin', 'manager']}>
+              <AllowedRoute allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
                 <ProductPage />
               </AllowedRoute>
             }
