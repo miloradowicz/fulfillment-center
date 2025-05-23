@@ -49,7 +49,7 @@ const SidebarContent: React.FC<Props> = ({ onLinkClick }) => {
         </NavLink>
       </ProtectedElement>
 
-      <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+      <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
         <NavLink
           to="/products"
           onClick={onLinkClick}
