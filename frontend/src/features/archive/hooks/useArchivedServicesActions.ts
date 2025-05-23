@@ -1,11 +1,13 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
 import { deleteService, fetchArchivedServices, unarchiveService } from '@/store/thunks/serviceThunk.ts'
 import {
   selectAllArchivedServices, selectLoadingFetchArchiveService,
 } from '@/store/slices/serviceSlice.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const useArchivedServiceActions = () => {
   const dispatch = useAppDispatch()
@@ -14,7 +16,8 @@ const useArchivedServiceActions = () => {
   const [actionType, setActionType] = useState<'delete' | 'unarchive'>('delete')
   const services = useAppSelector(selectAllArchivedServices)
   const loading = useAppSelector(selectLoadingFetchArchiveService)
-
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const deleteOneService = async (id: string) => {
     try {
@@ -22,7 +25,11 @@ const useArchivedServiceActions = () => {
       await dispatch(fetchArchivedServices())
       toast.success('Услуга успешно удалена!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось удалить услугу')
@@ -37,7 +44,11 @@ const useArchivedServiceActions = () => {
       await dispatch(fetchArchivedServices())
       toast.success('Услуга успешно восстановлена!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось восстановить услугу')

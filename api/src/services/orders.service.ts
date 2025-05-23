@@ -159,7 +159,7 @@ export class OrdersService {
 
       await this.doStocking(newOrder)
 
-      if (!this.stockManipulationService.testStock(newOrder.stock)) {
+      if (!this.stockManipulationService.testStockProducts(newOrder.stock, newOrder.products.map(x => x.product))) {
         throw new BadRequestException('На данном складе нет необходимого количества товара')
       }
 
@@ -210,7 +210,7 @@ export class OrdersService {
     const newStock = updatedOrder.stock
     await this.doStocking(updatedOrder)
 
-    if (!this.stockManipulationService.testStock(newStock)) {
+    if (!this.stockManipulationService.testStockProducts(newStock, updatedOrder.products.map(x => x.product))) {
       throw new BadRequestException('На данном складе нет необходимого количества товара')
     }
 

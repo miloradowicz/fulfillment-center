@@ -6,6 +6,9 @@ import { phoneNumberRegex } from '@/constants.ts'
 import { initialState } from '../state/counterpartyState.ts'
 import { toast } from 'react-toastify'
 import { selectOneCounterparty, selectLoadingAdd, selectLoadingUpdate, selectCounterpartyCreateError, selectCounterpartyUpdateError, clearErrors, selectAllCounterparties } from '@/store/slices/counterpartySlices.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice.ts'
+import { isAxios401Error } from '@/utils/helpers.ts'
 
 const requiredFields: (keyof CounterpartyMutation)[] = ['name']
 
@@ -22,6 +25,8 @@ export const useCounterpartyForm = (counterpartyId?: string, onClose?: () => voi
   const [errors, setErrors] = useState<{ [K in keyof CounterpartyMutation]?: string }>({})
   const [submitting, setSubmitting] = useState(false)
   const [errorsBlur, setErrorsBlur] = useState<CounterpartyError>({ name:'' })
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const generalError =
     (createError && typeof createError === 'object' && 'message' in createError ? createError.message : '') ||
@@ -174,7 +179,13 @@ export const useCounterpartyForm = (counterpartyId?: string, onClose?: () => voi
       setErrorsBlur({ name:'' })
       onClose?.()
     } catch (error) {
-      console.error('Error:', error)
+      if (isAxios401Error(error) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        console.error('Error:', error)
+      }
     } finally {
       setSubmitting(false)
     }

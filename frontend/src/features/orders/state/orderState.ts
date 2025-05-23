@@ -3,7 +3,6 @@ import { OrderMutation, ServiceType } from '@/types'
 export const initialState: OrderMutation = {
   client: '',
   products: [],
-  price: 0,
   stock: '',
   sent_at: '',
   delivered_at: '',

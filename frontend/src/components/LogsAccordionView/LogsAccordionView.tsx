@@ -4,15 +4,17 @@ import dayjs from 'dayjs'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 interface Props {
-  logs: LogWithPopulate[]
+  logs: LogWithPopulate[],
+  height?: string,
 }
 
-const LogsAccordionView: React.FC<Props> = ({ logs }) => {
+const LogsAccordionView: React.FC<Props> = ({ logs, height = '250' }) => {
   const reversedLogs = [...logs].reverse()
 
   return (
     <div className="space-y-4">
-      <div className="max-h-[250px] overflow-auto border border-gray-300 rounded-md p-4">
+      <div className="overflow-auto border border-gray-300 rounded-md p-4"
+        style={{ maxHeight: `${ height }px` }}>
         <Accordion type="multiple" className="w-full">
           {reversedLogs.map((log, index) => (
             <AccordionItem key={index} value={`log-${ index }`}>

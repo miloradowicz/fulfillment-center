@@ -4,7 +4,9 @@ import { unarchiveOrder, fetchArchivedOrders, deleteOrder } from '@/store/thunks
 import { toast } from 'react-toastify'
 import { selectAllArchivedOrders, selectLoadingFetchArchivedOrders } from '@/store/slices/orderSlice.ts'
 import { OrderWithClient } from '@/types'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 export const useArchivedOrdersActions = () => {
   const dispatch = useAppDispatch()
@@ -13,6 +15,8 @@ export const useArchivedOrdersActions = () => {
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const [orderToActionId, setOrderToActionId] = useState<string | null>(null)
   const [actionType, setActionType] = useState<'delete' | 'unarchive'>('delete')
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const deleteOneOrder = async (id: string) => {
     try {
@@ -20,7 +24,11 @@ export const useArchivedOrdersActions = () => {
       await dispatch(fetchArchivedOrders())
       toast.success('Заказ успешно удален!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось удалить заказ')
@@ -35,7 +43,11 @@ export const useArchivedOrdersActions = () => {
       await dispatch(fetchArchivedOrders())
       toast.success('Заказ успешно восстановлен!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось восстановить заказ')

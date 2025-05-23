@@ -11,7 +11,7 @@ export const fetchServiceCategories = createAsyncThunk<ServiceCategory[], void, 
       const response = await axiosAPI.get('/servicecategories')
       return response.data
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response && error.response.status !== 401) {
         return rejectWithValue(error.response.data as GlobalError)
       }
       throw error
@@ -26,7 +26,7 @@ export const fetchServiceCategoryById = createAsyncThunk<ServiceCategory, string
       const response = await axiosAPI.get(`/servicecategories/${ id }`)
       return response.data
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response && error.response.status !== 401) {
         return rejectWithValue(error.response.data as GlobalError)
       }
       throw error
@@ -77,7 +77,7 @@ export const archiveServiceCategory = createAsyncThunk<{ id: string }, string, {
       await axiosAPI.patch(`/servicecategories/${ id }/archive`)
       return { id }
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response && error.response.status !== 401) {
         return rejectWithValue(error.response.data as GlobalError)
       }
       throw error
@@ -92,7 +92,7 @@ export const deleteServiceCategory = createAsyncThunk<{ message: string }, strin
       const response = await axiosAPI.delete(`/servicecategories/${ id }`)
       return response.data
     } catch (error) {
-      if (isAxiosError(error) && error.response) {
+      if (isAxiosError(error) && error.response && error.response.status !== 401) {
         return rejectWithValue(error.response.data as GlobalError)
       }
       throw error

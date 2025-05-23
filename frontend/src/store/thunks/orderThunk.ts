@@ -69,7 +69,7 @@ export const addOrder = createAsyncThunk<Order, OrderMutation & { files?: File[]
     })
     return response.data
   } catch (error) {
-    if (isAxiosError(error) && error.response && error.response.status === 400) {
+    if (isAxiosError(error) && error.response?.status === 400) {
       return rejectWithValue(error.response.data as ValidationError)
     }
     throw error
@@ -83,7 +83,7 @@ export const archiveOrder = createAsyncThunk<{ id: string }, string, { rejectVal
       await axiosAPI.patch(`/orders/${ orderId }/archive`)
       return { id: orderId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -98,7 +98,7 @@ export const unarchiveOrder = createAsyncThunk<{ id: string }, string, { rejectV
       await axiosAPI.patch(`/orders/${ orderId }/unarchive`)
       return { id: orderId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -111,7 +111,7 @@ export const cancelOrder = createAsyncThunk<void, string, { rejectValue: GlobalE
   try {
     await axiosAPI.delete(`/orders/${ orderId }/cancel`)
   } catch (e) {
-    if (isAxiosError(e) && e.response) {
+    if (isAxiosError(e) && e.response && e.response.status !== 401) {
       return rejectWithValue(e.response.data as GlobalError)
     }
     throw e
@@ -123,7 +123,7 @@ export const deleteOrder = createAsyncThunk<void, string, { rejectValue: GlobalE
   try {
     await axiosAPI.delete(`/orders/${ orderId }`)
   } catch (e) {
-    if (isAxiosError(e) && e.response) {
+    if (isAxiosError(e) && e.response && e.response.status !== 401) {
       return rejectWithValue(e.response.data as GlobalError)
     }
     throw e
@@ -140,7 +140,7 @@ export const updateOrder = createAsyncThunk<Order, { orderId: string; data: Orde
       })
       return response.data
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response?.status === 400) {
         return rejectWithValue(e.response.data as ValidationError)
       }
       throw e

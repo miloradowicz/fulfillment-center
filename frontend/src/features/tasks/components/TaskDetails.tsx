@@ -29,10 +29,10 @@ const TaskDetails: React.FC<Props> = ({ taskId, selectedUser }) => {
   }
 
   return (
-    <div className="pt-10 max-w-[350px] w-full max-h-[80vh] h-full mx-auto text-[14px] text-gray-600">
+    <div className="pt-7 max-w-[350px] w-full max-h-[75vh] h-full mx-auto text-[14px] text-gray-600">
       <div className="flex flex-col justify-between shadow-[0_4px_10px_rgba(0,0,0,0.1)] rounded-md ">
-        <div className="flex-8 py-4">
-          <div className="flex justify-center items-center gap-2 rounded-md mb-4">
+        <div className="flex-8 pb-2">
+          <div className="flex justify-center items-center gap-2 rounded-md my-2">
             {getTaskIcon(task.type, 'h-6 w-6 text-gray-700')}
             <h5>
               <strong>{task.taskNumber}</strong>
@@ -44,11 +44,11 @@ const TaskDetails: React.FC<Props> = ({ taskId, selectedUser }) => {
           <div className="px-4 my-2">
             <h3 className="font-bold text-gray-800 text-[16px] text-center">{task.title}</h3>
           </div>
-          <div className="px-4 overflow-y-auto max-h-[200px]">
-            <p className="indent-5">{task.description}</p>
+          <div className="px-4 overflow-y-auto max-h-[150px]">
+            <p className="indent-5 break-words">{task.description}</p>
           </div>
         </div>
-        <div className="flex flex-col items-center gap-y-2 py-6 pl-6 border-l-1">
+        <div className="flex flex-col items-center gap-y-2 pb-4 pl-6 border-l-1">
           <div className="flex items-center gap-x-2 w-full">
             <p className="w-1/3 font-semibold text-gray-700">Исполнитель:</p>
             <p className="w-2/3 text-gray-600">{task.user.displayName}</p>
@@ -86,7 +86,7 @@ const TaskDetails: React.FC<Props> = ({ taskId, selectedUser }) => {
       <div className="mt-4">
         <h4 className="text-center font-bold text-gray-600 mb-4">История изменений:</h4>
         {task.logs && task.logs.length > 0 ? (
-          <LogsAccordionView logs={task.logs} />
+          <LogsAccordionView logs={task.logs} height={'220'}/>
         ) : (
           <p className="px-2 text-sm text-muted-foreground">История изменений отсутствует</p>
         )}

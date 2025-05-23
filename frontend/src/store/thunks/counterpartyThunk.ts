@@ -10,7 +10,7 @@ export const fetchAllCounterparties = createAsyncThunk<Counterparty[], void, { r
       const response = await axiosAPI.get('/counterparties')
       return response.data
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -25,12 +25,10 @@ export const fetchAllArchivedCounterparties = createAsyncThunk<Counterparty[], v
       const response = await axiosAPI.get('/counterparties/archived/all')
       return response.data
     } catch (e) {
-      if (isAxiosError(e)) {
-        return rejectWithValue({
-          message: e.response?.data?.message || e.message || 'Ошибка сети',
-        })
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
+        return rejectWithValue(e.response.data as GlobalError)
       }
-      return rejectWithValue({ message: 'Неизвестная ошибка' })
+      throw e
     }
   },
 )
@@ -46,7 +44,7 @@ export const fetchCounterpartyById = createAsyncThunk<
       const response = await axiosAPI.get(`/counterparties/${ id }`)
       return response.data
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -61,7 +59,7 @@ export const createCounterparty = createAsyncThunk<Counterparty, CounterpartyMut
       const response = await axiosAPI.post('/counterparties', data)
       return response.data
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response?.status === 400) {
         return rejectWithValue(e.response.data as ValidationError)
       }
       throw e
@@ -76,7 +74,7 @@ export const updateCounterparty = createAsyncThunk<Counterparty, { id: string; d
       const response = await axiosAPI.put(`/counterparties/${ id }`, data)
       return response.data
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response?.status === 400) {
         return rejectWithValue(e.response.data as ValidationError)
       }
       throw e
@@ -91,7 +89,7 @@ export const archiveCounterparty = createAsyncThunk<{ id: string }, string, { re
       await axiosAPI.patch(`/counterparties/${ id }/archive`)
       return { id }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -106,7 +104,7 @@ export const unarchiveCounterparty = createAsyncThunk<{ id: string }, string, { 
       await axiosAPI.patch(`/counterparties/${ counterpartyId }/unarchive`)
       return { id: counterpartyId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -121,7 +119,7 @@ export const deleteCounterparty = createAsyncThunk<{ id: string }, string, { rej
       await axiosAPI.delete(`/counterparties/${ id }`)
       return { id }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e

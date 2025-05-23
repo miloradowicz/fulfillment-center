@@ -124,6 +124,14 @@ export class StockManipulationService<T extends ProductWithAmount = ProductWithA
     this.stocks = {}
   }
 
+  testStockProducts(stockId: ObjectId, products: ObjectId[]) {
+    if (String(stockId) in this.stocks) {
+      return this.stocks[String(stockId)].products.filter(x => products.some(y => x.product.equals(y))).every(x => x.amount >= 0)
+    } else {
+      return true
+    }
+  }
+
   testStock(stockId: ObjectId) {
     if (String(stockId) in this.stocks) {
       return this.stocks[String(stockId)].products.every(x => x.amount >= 0)
@@ -135,6 +143,9 @@ export class StockManipulationService<T extends ProductWithAmount = ProductWithA
   async saveStock(stockId: ObjectId) {
     if (String(stockId) in this.stocks) {
       const stock = this.stocks[String(stockId)]
+
+      stock.products = stock.products.filter(x => x.amount !== 0)
+      stock.defects = stock.defects.filter(x => x.amount !== 0)
 
       await stock.save()
     }
