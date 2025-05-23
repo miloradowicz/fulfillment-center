@@ -30,7 +30,6 @@ const ArchivedOrders = () => {
       stock: { name: '', _id: '', address: '' },
       sent_at: '',
       delivered_at: '',
-      price: 0,
       status: '',
     },
     orders?.length || 3,
@@ -95,16 +94,6 @@ const ArchivedOrders = () => {
           dayjs(row.original.delivered_at).format('DD.MM.YYYY')
         ) : (
           'Не доставлен'
-        ),
-    },
-    {
-      accessorKey: 'price',
-      header: 'Стоимость',
-      cell: ({ row }) =>
-        row.original.isSkeleton ? (
-          <div className="h-4 w-16 bg-muted rounded-md animate-pulse" />
-        ) : (
-          `${ row.original.price } сом`
         ),
     },
     {
