@@ -53,7 +53,6 @@ const ArchiveOverview = () => {
           <ul className="list-disc pl-5">
             <li>Сортировка и фильтрация по основным полям</li>
             <li>Постраничная навигация</li>
-            <li>Поиск по всем данным таблицы</li>
           </ul>
         </div>
 

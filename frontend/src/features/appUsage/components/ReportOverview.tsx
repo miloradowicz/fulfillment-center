@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const images = [
-  '/app-usage/arrivals/arrivals-list.png',
-  '/app-usage/arrivals/arrivals-form.png',
-  '/app-usage/arrivals/arrivals-details.png',
+  '/app-usage/reports/reports-board.png',
+  '/app-usage/reports/tasks-report.png',
+  '/app-usage/reports/clients-report.png',
 ]
 
 const ReportOverview = () => {
@@ -29,11 +29,6 @@ const ReportOverview = () => {
               <strong>По клиентам</strong> — показывает финансовую и товарную активность клиентов
             </li>
           </ul>
-          <img
-            src={images[0]}
-            alt="Вкладки отчетов"
-            className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
-          />
         </div>
 
         <div>
@@ -42,6 +37,11 @@ const ReportOverview = () => {
             Во всех отчетах можно выбрать нужный диапазон дат. Данные обновляются автоматически.
             Если за выбранный период нет информации, это будет показано.
           </p>
+          <img
+            src={images[0]}
+            alt="Вкладки отчетов"
+            className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
+          />
         </div>
 
         <div>
@@ -102,7 +102,6 @@ const ReportOverview = () => {
           <ul className="list-disc pl-5">
             <li>Оптимизированная загрузка больших объемов данных</li>
             <li>Интерактивные элементы графиков (можно наводить курсором - показывают подробности)</li>
-            <li>Интеграция с модулями задач, клиентов и финансов</li>
           </ul>
         </div>
 
