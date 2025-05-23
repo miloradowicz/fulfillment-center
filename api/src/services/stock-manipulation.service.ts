@@ -144,6 +144,9 @@ export class StockManipulationService<T extends ProductWithAmount = ProductWithA
     if (String(stockId) in this.stocks) {
       const stock = this.stocks[String(stockId)]
 
+      stock.products = stock.products.filter(x => x.amount !== 0)
+      stock.defects = stock.defects.filter(x => x.amount !== 0)
+
       await stock.save()
     }
   }
