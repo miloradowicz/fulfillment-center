@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 import { ArrowUpRight, File, Phone, Truck } from 'lucide-react'
 import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
 import CopyText from '@/components/CopyText/CopyText.tsx'
-import { arrivalStatusStyles, tabTriggerStyles } from '@/utils/commonStyles.ts'
+import { arrivalStatusStyles, invoiceStatusStyles, tabTriggerStyles } from '@/utils/commonStyles.ts'
 import { capitalize } from '@/utils/capitalizeFirstLetter.ts'
 import LogsAccordionView from '@/components/LogsAccordionView/LogsAccordionView.tsx'
 import ServicesTable from '@/components/Tables/ServicesTable.tsx'
@@ -72,19 +72,26 @@ const ArrivalDetails = () => {
                 <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                   <CancelButton onClick={() => setConfirmCancelModalOpen(true)} />
                 </ProtectedElement>
-                <Badge
-                  className={cn(
-                    arrivalStatusStyles[arrival.arrival_status] || arrivalStatusStyles.default,
-                    'py-2 px-2.5 font-bold mb-4',
-                  )}
-                >
-                  {capitalize(arrival.arrival_status)}
-                </Badge>
+                <h3 className="text-xl font-bold flex gap-1 items-center mb-3">
+                  <Truck /> {arrival.arrivalNumber}
+                </h3>
+                <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+                  <div className="flex flex-col mb-4">
+                    <p className="text-sm font-bold text-muted-foreground mb-2">Оплата</p>
+                    {arrival.arrival_status && (
+                      <Badge
+                        className={cn(
+                          arrivalStatusStyles[arrival.arrival_status] || arrivalStatusStyles.default,
+                          'py-2 px-2.5 font-bold ',
+                        )}
+                      >
+                        {capitalize(arrival.arrival_status)}
+                      </Badge>
+                    )}
+                  </div>
+                </ProtectedElement>
 
                 <div className="space-y-5">
-                  <h3 className="text-xl font-bold flex gap-1 items-center mb-3">
-                    <Truck /> {arrival.arrivalNumber}
-                  </h3>
 
                   <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                     <div className="space-y-1">
@@ -115,6 +122,24 @@ const ArrivalDetails = () => {
                     <ArchiveButton onClick={() => setConfirmArchiveModalOpen(true)} />
                   </ProtectedElement>
                 </div>
+
+                <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+                  <div className="flex flex-col mb-4">
+                    <p className="text-sm font-bold text-muted-foreground mb-2">Оплата</p>
+                    {arrival.paymentStatus !== undefined && (
+                      <Badge
+                        className={cn(
+                          invoiceStatusStyles[
+                            arrival.paymentStatus as 'в ожидании' | 'оплачено' | 'частично оплачено'
+                          ] || invoiceStatusStyles['в ожидании'],
+                          'py-1.5 px-3 font-bold text-center',
+                        )}
+                      >
+                        {capitalize(arrival.paymentStatus ?? 'в ожидании')}
+                      </Badge>
+                    )}
+                  </div>
+                </ProtectedElement>
 
                 <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                   <div className="space-y-1 mb-4">
