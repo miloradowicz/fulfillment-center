@@ -7,5 +7,6 @@
 **/*Dockerfile
 .*
 .env*
+cert
 test
 uploads
