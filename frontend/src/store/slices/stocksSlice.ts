@@ -51,13 +51,10 @@ const initialState: StockState = {
 export const selectAllStocks = (state: RootState) => state.stocks.stocks
 export const selectAllArchivedStocks = (state: RootState) => state.stocks.archivedStocks
 export const selectOneStock = (state: RootState) => state.stocks.stock
-export const selectOneArchivedStock = (state: RootState) => state.stocks.archivedStock
 export const selectIsStocksLoading = (state: RootState) => state.stocks.loadingFetch
 export const selectLoadingFetchArchivedStocks = (state: RootState) => state.stocks.loadingFetchArchive
-export const selectIsStockArchiving = (state: RootState) => state.stocks.loadingArchive
 export const selectIsStockCreating = (state: RootState) => state.stocks.loadingCreate
 export const selectStockCreateError = (state: RootState) => state.stocks.createAndUpdateError
-export const selectStockError = (state: RootState) => state.stocks.error
 export const selectLoadingWriteOff = (state: RootState) => state.stocks.loadingWriteOff
 export const selectCreateWriteOffError = (state: RootState) => state.stocks.createWriteOffError
 

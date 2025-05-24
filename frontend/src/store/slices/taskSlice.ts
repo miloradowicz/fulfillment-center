@@ -48,16 +48,12 @@ const initialState: TaskState = {
 
 export const selectTask= (state: RootState) => state.tasks.task
 export const selectDraggingTask= (state: RootState) => state.tasks.draggingTask
-export const selectAllTasks = (state: RootState) => state.tasks.tasks
 export const selectAllArchivedTasks = (state: RootState) => state.tasks.archivedTasks
 export const selectPopulatedTasks = (state: RootState) => state.tasks.tasksPopulate
 export const selectLoadingFetchTask = (state: RootState) => state.tasks.loadingFetch
 export const selectLoadingFetchArchivedTasks = (state: RootState) => state.tasks.loadingFetchArchived
 export const selectLoadingAddTask = (state: RootState) => state.tasks.loadingAdd
-export const selectLoadingDeleteTask = (state: RootState) => state.tasks.loadingDelete
 export const selectLoadingUpdateTask = (state: RootState) => state.tasks.loadingUpdate
-export const selectLoadingArchiveTask = (state: RootState) => state.tasks.loadingArchive
-export const selectArrivalError = (state: RootState) => state.tasks.error
 export const selectCreateError = (state: RootState) => state.tasks.createError
 
 const taskSlice = createSlice({

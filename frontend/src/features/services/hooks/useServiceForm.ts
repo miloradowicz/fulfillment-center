@@ -3,7 +3,7 @@ import { ServiceCategory, ServiceMutation, ValidationError } from '@/types'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import { createService, fetchServiceById, fetchServices, updateService } from '@/store/thunks/serviceThunk'
 import { selectAllServices, selectLoadingAddService, selectService, selectServiceCreationAndModificationError } from '@/store/slices/serviceSlice'
-import { selectAllServiceCateogories, selectLoadingAddServiceCategory, selectLoadingFetchServiceCategory, selectServiceCategoryCreationAndModificationError } from '@/store/slices/serviceCategorySlice'
+import { selectAllServiceCategories, selectLoadingAddServiceCategory, selectLoadingFetchServiceCategory, selectServiceCategoryCreationAndModificationError } from '@/store/slices/serviceCategorySlice'
 import { createServiceCategory, deleteServiceCategory, fetchServiceCategories } from '@/store/thunks/serviceCategoryThunk'
 import { toast } from 'react-toastify'
 import { clearCreationAndModificationError as clearServiceCreateError } from '@/store/slices/serviceSlice'
@@ -48,7 +48,7 @@ const useServiceForm = (serviceId?: string, onClose?: () => void) => {
 
   const service = useAppSelector(selectService)
   const services = useAppSelector(selectAllServices)
-  const serviceCategories = useAppSelector(selectAllServiceCateogories)
+  const serviceCategories = useAppSelector(selectAllServiceCategories)
 
   const createServiceCategoryError = useAppSelector(selectServiceCategoryCreationAndModificationError)
   const createServiceError = useAppSelector(selectServiceCreationAndModificationError)

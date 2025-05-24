@@ -51,10 +51,6 @@ export const selectLoadingFetchService = (state: RootState) => state.services.lo
 export const selectLoadingFetchOneService = (state: RootState) => state.services.loadingFetchOne
 export const selectLoadingFetchArchiveService = (state: RootState) => state.services.loadingFetchArchive
 export const selectLoadingAddService = (state: RootState) => state.services.loadingAdd
-export const selectLoadingArchiveService = (state: RootState) => state.services.loadingArchive
-export const selectLoadingUnarchiveService = (state: RootState) => state.services.loadingUnarchive
-export const selectLoadingDeleteService = (state: RootState) => state.services.loadingDelete
-export const selectLoadingUpdateService = (state: RootState) => state.services.loadingUpdate
 export const selectServiceError = (state: RootState) => state.services.error
 export const selectServiceCreationAndModificationError = (state: RootState) => state.services.creationAndModificationError
 
