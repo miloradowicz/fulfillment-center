@@ -45,16 +45,11 @@ const initialState: InvoiceState = {
 export const selectAllInvoices = (state: RootState) => state.invoices.invoices
 export const selectAllArchivedInvoices = (state: RootState) => state.invoices.archivedInvoices
 export const selectOneInvoice = (state: RootState) => state.invoices.invoice
-export const selectInvoiceError = (state: RootState) => state.invoices.error
 export const selectInvoiceCreateAndUpdateError = (state: RootState) => state.invoices.createAndUpdateError
-export const selectInvoiceUpdateError = (state: RootState) => state.invoices.updateError
 
 export const selectLoadingFetch = (state: RootState) => state.invoices.loadingFetch
 export const selectLoadingFetchArchiveInvoice = (state: RootState) => state.invoices.loadingFetchArchive
 export const selectLoadingAdd = (state: RootState) => state.invoices.loadingAdd
-export const selectLoadingDelete = (state: RootState) => state.invoices.loadingDelete
-export const selectLoadingUpdate = (state: RootState) => state.invoices.loadingUpdate
-export const selectLoadingArchive = (state: RootState) => state.invoices.loadingArchive
 
 const invoicesSlice = createSlice({
   name: 'invoices',

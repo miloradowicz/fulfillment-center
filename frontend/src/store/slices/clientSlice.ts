@@ -46,14 +46,11 @@ const initialState: ClientState = {
 }
 
 export const selectClient = (state: RootState) => state.clients.client
-export const selectArchivedClient = (state: RootState) => state.clients.archivedClient
 export const selectAllClients = (state: RootState) => state.clients.clients
 export const selectAllArchivedClients = (state: RootState) => state.clients.archivedClients
 export const selectLoadingFetchClient = (state: RootState) => state.clients.loadingFetch
 export const selectLoadingArchivedClients = (state: RootState) => state.clients.loadingArchived
 export const selectLoadingAddClient = (state: RootState) => state.clients.loadingAdd
-export const selectLoadingArchiveClient = (state: RootState) => state.clients.loadingArchive
-export const selectLoadingDeleteClient = (state: RootState) => state.clients.loadingDelete
 export const selectLoadingUpdateClient = (state: RootState) => state.clients.loadingUpdate
 export const selectClientError = (state: RootState) => state.clients.error
 export const selectClientCreationAndModificationError = (state: RootState) => state.clients.creationAndModificationError

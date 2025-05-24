@@ -24,7 +24,6 @@ const initialState: AuthState = {
 export const selectUser = (state: RootState) => state.auth.user
 export const selectLoadingRegisterUser = (state: RootState) => state.auth.loadingRegister
 export const selectLoadingLoginUser = (state: RootState) => state.auth.loadingLogin
-export const selectUserError = (state: RootState) => state.auth.error
 export const selectCreateError = (state: RootState) => state.auth.createError
 export const selectLoginError = (state: RootState) => state.auth.loginError
 

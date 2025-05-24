@@ -64,19 +64,13 @@ const initialState: OrderState = {
   createAndUpdateError: null,
 }
 
-export const selectOrder = (state: RootState) => state.orders.order
 export const selectAllOrders = (state: RootState) => state.orders.orders
 export const selectAllArchivedOrders = (state: RootState) => state.orders.archivedOrders
 export const selectPopulateOrder = (state: RootState) => state.orders.populateOrder
 export const selectAllOrdersWithClient = (state: RootState) => state.orders.ordersWithClient
 export const selectLoadingFetchOrder = (state: RootState) => state.orders.loadingFetch
 export const selectLoadingFetchArchivedOrders = (state: RootState) => state.orders.loadingFetchArchive
-export const selectLoadingFetchOrderPopulate = (state: RootState) => state.orders.loadingFetchPopulate
 export const selectLoadingAddOrder = (state: RootState) => state.orders.loadingAdd
-export const selectLoadingArchiveOrder = (state: RootState) => state.orders.loadingArchive
-export const selectLoadingCancelOrder = (state: RootState) => state.orders.loadingCancel
-export const selectLoadingUpdateOrder = (state: RootState) => state.orders.loadingUpdate
-export const selectLoadingDeleteOrder = (state: RootState) => state.orders.loadingDelete
 export const selectOrderError = (state: RootState) => state.orders.error
 export const selectCreateOrderError = (state: RootState) => state.orders.createAndUpdateError
 
@@ -89,9 +83,6 @@ const orderSlice = createSlice({
     },
     clearErrorOrder: state => {
       state.createAndUpdateError = null
-    },
-    clearArchivedOrders: state => {
-      state.archivedOrders = null
     },
     clearAll: state => {
       state.order = null
@@ -258,4 +249,4 @@ const orderSlice = createSlice({
 
 export const orderReducer = orderSlice.reducer
 export const { clearPopulateOrder } = orderSlice.actions
-export const { clearErrorOrder, clearAll } = orderSlice.actions
+export const { clearErrorOrder } = orderSlice.actions

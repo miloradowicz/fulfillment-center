@@ -52,7 +52,6 @@ const initialState: ArrivalState = {
   createAndUpdateError: null,
 }
 
-export const selectArrival = (state: RootState) => state.arrivals.arrival
 export const selectArrivalWithPopulate = (state: RootState) => state.arrivals.arrivalWithPopulate
 export const selectAllArrivals = (state: RootState) => state.arrivals.arrivals
 export const selectAllArchivedArrivals = (state: RootState) => state.arrivals.archivedArrivals
@@ -60,11 +59,6 @@ export const selectPopulatedArrivals = (state: RootState) => state.arrivals.arri
 export const selectLoadingFetchArrival = (state: RootState) => state.arrivals.loadingFetch
 export const selectLoadingFetchArchivedArrivals = (state: RootState) => state.arrivals.loadingFetchArchive
 export const selectLoadingAddArrival = (state: RootState) => state.arrivals.loadingAdd
-export const selectLoadingArchiveArrival = (state: RootState) => state.arrivals.loadingArchive
-export const selectLoadingCancelArrival = (state: RootState) => state.arrivals.loadingCancel
-export const selectLoadingUpdateArrival = (state: RootState) => state.arrivals.loadingUpdate
-export const selectLoadingDeleteArrival = (state: RootState) => state.arrivals.loadingDelete
-export const selectArrivalError = (state: RootState) => state.arrivals.error
 export const selectCreateError = (state: RootState) => state.arrivals.createAndUpdateError
 
 const arrivalSlice = createSlice({
@@ -236,4 +230,4 @@ const arrivalSlice = createSlice({
 })
 
 export const arrivalReducer = arrivalSlice.reducer
-export const { clearErrorArrival, clearAll } = arrivalSlice.actions
+export const { clearErrorArrival } = arrivalSlice.actions
