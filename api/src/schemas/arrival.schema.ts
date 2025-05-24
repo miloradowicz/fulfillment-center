@@ -146,6 +146,13 @@ export class Arrival {
 
 const ArrivalSchema = SchemaFactory.createForClass(Arrival)
 
+ArrivalSchema.virtual('invoice', {
+  ref: 'Invoice',
+  localField: '_id',
+  foreignField: 'associatedArrival',
+  justOne: true,
+})
+
 export const ArrivalSchemaFactory = (
   taskModel: Model<Task>,
 ) => {
