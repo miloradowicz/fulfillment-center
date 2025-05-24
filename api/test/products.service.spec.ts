@@ -34,6 +34,8 @@ describe('ProductsService', () => {
     save: jest.fn().mockResolvedValue(this),
   }
 
+  const mockUserId = new mongoose.Types.ObjectId()
+
   const mockArchivedProduct = {
     ...mockProduct,
     isArchived: true,
@@ -286,16 +288,16 @@ describe('ProductsService', () => {
     it('should create a new product', async () => {
       jest.spyOn(productModel, 'findOne').mockResolvedValue(null)
 
-      const result = await service.create(createProductDto)
+      const result = await service.create(createProductDto, mockUserId)
 
-      expect(productModel.create).toHaveBeenCalledWith(createProductDto)
+      expect(productModel.create).toHaveBeenCalledWith(createProductDto, mockUserId)
       expect(result).toEqual(mockProduct)
     })
 
     it('should throw BadRequestException if barcode already exists', async () => {
       jest.spyOn(productModel, 'findOne').mockResolvedValueOnce(mockProduct as any)
 
-      await expect(service.create(createProductDto)).rejects.toThrow(BadRequestException)
+      await expect(service.create(createProductDto, mockUserId)).rejects.toThrow(BadRequestException)
     })
 
     it('should throw BadRequestException if article already exists', async () => {
@@ -304,7 +306,7 @@ describe('ProductsService', () => {
         .mockResolvedValueOnce(null) // для первого вызова с barcode
         .mockResolvedValueOnce(mockProduct as any) // для второго вызова с article
 
-      await expect(service.create(createProductDto)).rejects.toThrow(BadRequestException)
+      await expect(service.create(createProductDto, mockUserId)).rejects.toThrow(BadRequestException)
     })
 
     it('should parse dynamic_fields from string', async () => {
@@ -314,12 +316,12 @@ describe('ProductsService', () => {
         dynamic_fields: JSON.stringify([{ key: 'size', label: 'Размер', value: 'M' }]),
       }
 
-      await service.create(dtoWithStringDynamicFields)
+      await service.create(dtoWithStringDynamicFields, mockUserId)
 
       expect(productModel.create).toHaveBeenCalledWith({
         ...createProductDto,
         dynamic_fields: [{ key: 'size', label: 'Размер', value: 'M' }],
-      })
+      }, mockUserId)
     })
 
     it('should throw BadRequestException if dynamic_fields has invalid JSON', async () => {
@@ -329,7 +331,7 @@ describe('ProductsService', () => {
         dynamic_fields: '{invalid json}',
       }
 
-      await expect(service.create(dtoWithInvalidDynamicFields)).rejects.toThrow(BadRequestException)
+      await expect(service.create(dtoWithInvalidDynamicFields, mockUserId)).rejects.toThrow(BadRequestException)
     })
   })
 
@@ -347,16 +349,16 @@ describe('ProductsService', () => {
     it('should update a product', async () => {
       jest.spyOn(productModel, 'findOne').mockResolvedValue(null)
 
-      const result = await service.update(mockProduct._id, updateProductDto)
+      const result = await service.update(mockProduct._id, updateProductDto, mockUserId)
 
-      expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(mockProduct._id, updateProductDto, { new: true })
+      expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(mockProduct._id, updateProductDto, { new: true }, mockUserId)
       expect(result).toEqual(mockProduct)
     })
 
     it('should throw NotFoundException if product not found', async () => {
       jest.spyOn(service, 'getById').mockRejectedValue(new NotFoundException('Товар не найден'))
 
-      await expect(service.update('nonexistent-id', updateProductDto)).rejects.toThrow(NotFoundException)
+      await expect(service.update('nonexistent-id', updateProductDto, mockUserId)).rejects.toThrow(NotFoundException)
     })
 
     it('should throw BadRequestException if barcode already exists', async () => {
@@ -368,7 +370,7 @@ describe('ProductsService', () => {
         service.update(mockProduct._id, {
           ...updateProductDto,
           barcode: 'existing-barcode',
-        }),
+        }, mockUserId),
       ).rejects.toThrow(BadRequestException)
     })
 
@@ -384,7 +386,7 @@ describe('ProductsService', () => {
         service.update(mockProduct._id, {
           ...updateProductDto,
           article: 'existing-article',
-        }),
+        }, mockUserId),
       ).rejects.toThrow(BadRequestException)
     })
 
@@ -394,9 +396,9 @@ describe('ProductsService', () => {
         barcode: mockProduct.barcode,
       }
 
-      await service.update(mockProduct._id, dto)
+      await service.update(mockProduct._id, dto, mockUserId)
 
-      expect(productModel.findOne).not.toHaveBeenCalledWith({ barcode: dto.barcode })
+      expect(productModel.findOne).not.toHaveBeenCalledWith({ barcode: dto.barcode }, mockUserId)
     })
 
     it('should not check for article uniqueness if article is not changed', async () => {
@@ -405,9 +407,9 @@ describe('ProductsService', () => {
         article: mockProduct.article,
       }
 
-      await service.update(mockProduct._id, dto)
+      await service.update(mockProduct._id, dto, mockUserId)
 
-      expect(productModel.findOne).not.toHaveBeenCalledWith({ article: dto.article })
+      expect(productModel.findOne).not.toHaveBeenCalledWith({ article: dto.article }, mockUserId)
     })
 
     it('should parse dynamic_fields from string', async () => {
@@ -417,7 +419,7 @@ describe('ProductsService', () => {
         dynamic_fields: JSON.stringify([{ key: 'size', label: 'Размер', value: 'L' }]),
       }
 
-      await service.update(mockProduct._id, dtoWithStringDynamicFields)
+      await service.update(mockProduct._id, dtoWithStringDynamicFields, mockUserId)
 
       expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(
         mockProduct._id,
@@ -426,6 +428,7 @@ describe('ProductsService', () => {
           dynamic_fields: [{ key: 'size', label: 'Размер', value: 'L' }],
         },
         { new: true },
+        mockUserId
       )
     })
   })
@@ -434,30 +437,30 @@ describe('ProductsService', () => {
     it('should archive a product', async () => {
       jest.spyOn(service, 'isLocked').mockResolvedValue(false)
 
-      const result = await service.archive(mockProduct._id)
+      const result = await service.archive(mockProduct._id, mockUserId)
 
-      expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(mockProduct._id, { isArchived: true })
+      expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(mockProduct._id, { isArchived: true }, mockUserId)
       expect(result).toEqual({ message: 'Товар перемещен в архив' })
     })
 
     it('should throw ForbiddenException if product is locked', async () => {
       jest.spyOn(service, 'isLocked').mockResolvedValue(true)
 
-      await expect(service.archive(mockProduct._id)).rejects.toThrow(ForbiddenException)
+      await expect(service.archive(mockProduct._id,mockUserId)).rejects.toThrow(ForbiddenException)
     })
 
     it('should throw NotFoundException if product not found', async () => {
       jest.spyOn(service, 'isLocked').mockResolvedValue(false)
       jest.spyOn(productModel, 'findByIdAndUpdate').mockResolvedValue(null)
 
-      await expect(service.archive('nonexistent-id')).rejects.toThrow(NotFoundException)
+      await expect(service.archive('nonexistent-id', mockUserId)).rejects.toThrow(NotFoundException)
     })
 
     it('should throw ForbiddenException if product already archived', async () => {
       jest.spyOn(service, 'isLocked').mockResolvedValue(false)
       jest.spyOn(productModel, 'findByIdAndUpdate').mockResolvedValue(mockArchivedProduct)
 
-      await expect(service.archive(mockArchivedProduct._id)).rejects.toThrow(ForbiddenException)
+      await expect(service.archive(mockArchivedProduct._id, mockUserId)).rejects.toThrow(ForbiddenException)
     })
   })
 
@@ -468,7 +471,7 @@ describe('ProductsService', () => {
         save: jest.fn().mockResolvedValue(mockProduct),
       } as any)
 
-      const result = await service.unarchive(mockArchivedProduct._id)
+      const result = await service.unarchive(mockArchivedProduct._id, mockUserId)
 
       expect(result).toEqual({ message: 'Продукт восстановлен из архива' })
     })
@@ -476,13 +479,13 @@ describe('ProductsService', () => {
     it('should throw NotFoundException if product not found', async () => {
       jest.spyOn(productModel, 'findById').mockResolvedValue(null)
 
-      await expect(service.unarchive('nonexistent-id')).rejects.toThrow(NotFoundException)
+      await expect(service.unarchive('nonexistent-id', mockUserId)).rejects.toThrow(NotFoundException)
     })
 
     it('should throw ForbiddenException if product is not archived', async () => {
       jest.spyOn(productModel, 'findById').mockResolvedValue(mockProduct as any)
 
-      await expect(service.unarchive(mockProduct._id)).rejects.toThrow(ForbiddenException)
+      await expect(service.unarchive(mockProduct._id, mockUserId)).rejects.toThrow(ForbiddenException)
     })
   })
 

@@ -3,6 +3,7 @@ import { ArrivalsController } from '../src/controllers/arrivals.controller'
 import { ArrivalsService } from '../src/services/arrivals.service'
 import { RolesGuard } from '../src/guards/roles.guard'
 import { Readable } from 'stream'
+import { RequestWithUser } from 'src/types'
 
 class MockArrivalDocument {
   isArchived: boolean = false
@@ -43,6 +44,14 @@ describe('ArrivalsController', () => {
     unarchive: jest.fn(),
     delete: jest.fn(),
   }
+
+  const mockUser = {
+    _id: 'user-id'
+  }
+
+  const mockRequest = {
+    user: mockUser
+  } as RequestWithUser
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -216,9 +225,9 @@ describe('ArrivalsController', () => {
 
       mockArrivalsService.create.mockResolvedValue(expectedArrival)
 
-      const result = await controller.createArrival(arrivalDto as any, files)
+      const result = await controller.createArrival(arrivalDto as any, files, mockRequest)
 
-      expect(service.create).toHaveBeenCalledWith(arrivalDto, files)
+      expect(service.create).toHaveBeenCalledWith(arrivalDto, files, mockUser._id)
       expect(result).toEqual(expectedArrival)
     })
   })
@@ -256,9 +265,9 @@ describe('ArrivalsController', () => {
 
       mockArrivalsService.update.mockResolvedValue(updatedArrival)
 
-      const result = await controller.updateArrival(arrivalId, updateDto as any, files)
+      const result = await controller.updateArrival(arrivalId, updateDto as any, files, mockRequest)
 
-      expect(service.update).toHaveBeenCalledWith(arrivalId, updateDto, files)
+      expect(service.update).toHaveBeenCalledWith(arrivalId, updateDto, files, mockUser._id)
       expect(result).toEqual(updatedArrival)
     })
   })
@@ -273,9 +282,9 @@ describe('ArrivalsController', () => {
 
       mockArrivalsService.archive.mockResolvedValue(archivedArrival)
 
-      const result = await controller.archiveArrival(arrivalId)
+      const result = await controller.archiveArrival(arrivalId, mockRequest)
 
-      expect(service.archive).toHaveBeenCalledWith(arrivalId)
+      expect(service.archive).toHaveBeenCalledWith(arrivalId, mockUser._id)
       expect(result).toEqual(archivedArrival)
     })
   })
@@ -290,9 +299,9 @@ describe('ArrivalsController', () => {
 
       mockArrivalsService.unarchive.mockResolvedValue(unarchivedArrival)
 
-      const result = await controller.unarchiveArrival(arrivalId)
+      const result = await controller.unarchiveArrival(arrivalId, mockRequest)
 
-      expect(service.unarchive).toHaveBeenCalledWith(arrivalId)
+      expect(service.unarchive).toHaveBeenCalledWith(arrivalId, mockUser._id)
       expect(result).toEqual(unarchivedArrival)
     })
   })

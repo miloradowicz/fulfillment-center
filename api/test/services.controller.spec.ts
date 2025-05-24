@@ -7,6 +7,7 @@ import { CreateServiceDto } from '../src/dto/create-service.dto'
 import { UpdateServiceDto } from '../src/dto/update-service.dto'
 import mongoose from 'mongoose'
 import { RolesGuard } from '../src/guards/roles.guard'
+import { RequestWithUser } from 'src/types'
 
 describe('ServicesController', () => {
   let controller: ServicesController
@@ -23,6 +24,16 @@ describe('ServicesController', () => {
     archive: jest.fn(),
     delete: jest.fn(),
   }
+
+  const mockUserId = 'user-id'
+
+  const mockUser = {
+    _id: mockUserId
+  }
+
+  const mockRequest = {
+    user: mockUser
+  } as RequestWithUser
 
   // Мок для RolesGuard
   const mockRolesGuard = {
@@ -117,8 +128,8 @@ describe('ServicesController', () => {
       const result = { ...dto, id: '123' }
       mockService.create.mockResolvedValue(result)
 
-      expect(await controller.createService(dto)).toEqual(result)
-      expect(mockService.create).toHaveBeenCalledWith(dto)
+      expect(await controller.createService(dto, mockRequest)).toEqual(result)
+      expect(mockService.create).toHaveBeenCalledWith(dto, mockUserId)
     })
   })
 
@@ -132,8 +143,8 @@ describe('ServicesController', () => {
       const result = { id, name: 'Updated Service', price: 150 }
       mockService.update.mockResolvedValue(result)
 
-      expect(await controller.updateService(id, dto)).toEqual(result)
-      expect(mockService.update).toHaveBeenCalledWith(id, dto)
+      expect(await controller.updateService(id, dto, mockRequest)).toEqual(result)
+      expect(mockService.update).toHaveBeenCalledWith(id, dto, false, mockUserId)
     })
   })
 
@@ -143,8 +154,8 @@ describe('ServicesController', () => {
       const result = { message: 'Услуга перемещена в архив' }
       mockService.archive.mockResolvedValue(result)
 
-      expect(await controller.archiveService(id)).toEqual(result)
-      expect(mockService.archive).toHaveBeenCalledWith(id)
+      expect(await controller.archiveService(id, mockRequest)).toEqual(result)
+      expect(mockService.archive).toHaveBeenCalledWith(id, mockUserId)
     })
   })
 

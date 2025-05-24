@@ -19,6 +19,7 @@ import mongoose from 'mongoose'
 import { RolesGuard } from '../src/guards/roles.guard'
 import { TokenAuthService } from '../src/services/token-auth.service'
 import { RolesService } from '../src/services/roles.service'
+import { RequestWithUser } from 'src/types'
 
 // Мокаем RolesGuard, чтобы он пропускал все запросы
 jest.mock('../src/guards/roles.guard', () => ({
@@ -42,11 +43,20 @@ describe('OrdersController', () => {
         amount: 5,
       },
     ],
-    price: 500,
     sent_at: new Date(),
     status: 'в сборке',
     isArchived: false,
   }
+
+  const mockUserId = 'user-id'
+
+  const mockUser = {
+    _id: mockUserId
+  }
+
+  const mockRequest = {
+    user: mockUser
+  } as RequestWithUser
 
   const mockOrdersService = {
     getAll: jest.fn(),
@@ -237,9 +247,9 @@ describe('OrdersController', () => {
       const newOrder = { ...mockOrder, ...createOrderDto }
       mockOrdersService.create.mockResolvedValue(newOrder)
 
-      const result = await controller.createOrder(createOrderDto, files)
+      const result = await controller.createOrder(createOrderDto, files, mockRequest)
 
-      expect(service.create).toHaveBeenCalledWith(createOrderDto, files)
+      expect(service.create).toHaveBeenCalledWith(createOrderDto, files, mockUserId)
       expect(result).toEqual(newOrder)
     })
   })
@@ -247,7 +257,6 @@ describe('OrdersController', () => {
   describe('updateOrder', () => {
     it('should update an order successfully', async () => {
       const updateOrderDto: UpdateOrderDto = {
-        price: 600,
         status: 'в пути',
       }
 
@@ -274,10 +283,9 @@ describe('OrdersController', () => {
 
       mockOrdersService.update.mockResolvedValue(updatedOrder)
 
-      const result = await controller.updateOrder('order-id', updateOrderDto, files)
+      const result = await controller.updateOrder('order-id', updateOrderDto, files, mockRequest)
 
-      expect(service.update).toHaveBeenCalledWith('order-id', updateOrderDto, files)
-      expect(result.price).toBe(updateOrderDto.price)
+      expect(service.update).toHaveBeenCalledWith('order-id', updateOrderDto, files, mockUserId)
       expect(result.status).toBe(updateOrderDto.status)
     })
   })
@@ -288,9 +296,9 @@ describe('OrdersController', () => {
 
       mockOrdersService.archive.mockResolvedValue(archiveMessage)
 
-      const result = await controller.archiveOrder('order-id')
+      const result = await controller.archiveOrder('order-id', mockRequest)
 
-      expect(service.archive).toHaveBeenCalledWith('order-id')
+      expect(service.archive).toHaveBeenCalledWith('order-id', mockUserId)
       expect(result).toEqual(archiveMessage)
     })
   })
@@ -301,9 +309,9 @@ describe('OrdersController', () => {
 
       mockOrdersService.unarchive.mockResolvedValue(unarchiveMessage)
 
-      const result = await controller.unarchiveOrder('order-id')
+      const result = await controller.unarchiveOrder('order-id', mockRequest)
 
-      expect(service.unarchive).toHaveBeenCalledWith('order-id')
+      expect(service.unarchive).toHaveBeenCalledWith('order-id', mockUserId)
       expect(result).toEqual(unarchiveMessage)
     })
   })
