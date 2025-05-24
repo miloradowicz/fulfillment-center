@@ -5,32 +5,21 @@ import { Store } from '@reduxjs/toolkit'
 import axios from 'axios'
 
 const axiosAPI = axios.create({
-  baseURL: `http://${apiHost}:8000`,
+  baseURL: `${apiHost}`,
   withCredentials: true,
   xsrfCookieName: 'XSRF-TOKEN',
 })
 
-// axiosAPI.interceptors.request.use(config => {
-//   const method = config.method?.toLowerCase()
-//
-//   if (config.data && (method === 'post' || method === 'put' || method === 'patch')) {
-//     config.data = sanitizeData(config.data)
-//   }
-//
-//   return config
-// }, error => {
-//   return Promise.reject(error)
-// })
 
 export const addCsrf = async () => {
   try {
-    const { data } = await axiosAPI.get<{csrfToken: string}>('csrf')
+    const { data } = await axiosAPI.get<{ csrfToken: string }>('csrf')
 
     axiosAPI.interceptors.request.use(config => {
       config.headers.set('X-XSRF-TOKEN', data.csrfToken)
       return config
     })
-  } catch(e) {
+  } catch (e) {
     console.error(e)
   }
 }

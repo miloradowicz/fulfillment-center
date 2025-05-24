@@ -12,6 +12,9 @@ import { ErrorMessagesList } from '@/messages.ts'
 import { PopoverType } from '@/components/CustomSelect/CustomSelect.tsx'
 import { ErrorMessages, FormType, StockWriteOffData } from '../utils/writeOffTypes'
 import { initialErrorState, initialItemState, initialState } from '../state/writeOffState'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
+import { isAxios401Error } from '@/utils/helpers'
 
 export const useWriteOffForm = (initialData?: Partial<StockWriteOffData>, onSuccess?: () => void) => {
   const dispatch = useAppDispatch()
@@ -21,6 +24,8 @@ export const useWriteOffForm = (initialData?: Partial<StockWriteOffData>, onSucc
   const error = useAppSelector(selectCreateWriteOffError)
   const isLoading = useAppSelector(selectLoadingWriteOff)
   const stock = useAppSelector(selectOneStock)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const [form, setForm] = useState<StockWriteOffMutation>(
     {
@@ -137,7 +142,11 @@ export const useWriteOffForm = (initialData?: Partial<StockWriteOffData>, onSucc
     } catch (error) {
       console.error(error)
 
-      if (error instanceof Error) {
+      if (isAxios401Error(error) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (error instanceof Error) {
         return error.message
       } else if (typeof error === 'object' && error !== null && 'message' in error) {
         toast.error((error as { message: string }).message)

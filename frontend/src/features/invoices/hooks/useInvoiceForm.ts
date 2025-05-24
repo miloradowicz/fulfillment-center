@@ -10,7 +10,7 @@ import { ErrorMessagesList } from '@/messages.ts'
 import { fetchServices } from '@/store/thunks/serviceThunk.ts'
 import { ErrorMessages, InvoiceData, ServiceField } from '../types/invoiceTypes.ts'
 import { selectAllServices } from '@/store/slices/serviceSlice.ts'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { PopoverType } from '@/components/CustomSelect/CustomSelect.tsx'
 import { fetchOrdersByClientId } from '@/store/thunks/orderThunk.ts'
 import { createInvoices, fetchInvoiceById, fetchInvoices, updateInvoice } from '@/store/thunks/invoiceThunk.ts'
@@ -18,6 +18,8 @@ import { selectAllOrders } from '@/store/slices/orderSlice.ts'
 import { addDummyOption } from '@/utils/addDummuOption.ts'
 import { clearCreateAndUpdateError, clearErrors, selectInvoiceCreateAndUpdateError, selectLoadingAdd } from '@/store/slices/invoiceSlice.ts'
 import { selectAllArrivals } from '@/store/slices/arrivalSlice.ts'
+import { selectUser, unsetUser } from '@/store/slices/authSlice.ts'
+import { isAxios401Error } from '@/utils/helpers.ts'
 
 export const useInvoiceForm = (initialData?: InvoiceData, onSuccess?: () => void) => {
   const dispatch = useAppDispatch()
@@ -27,6 +29,8 @@ export const useInvoiceForm = (initialData?: InvoiceData, onSuccess?: () => void
   const services = useAppSelector(selectAllServices)
   const location = useLocation()
   const [invoiceStatus, setInvoiceStatus] = useState<'в ожидании' | 'частично оплачено' | 'оплачено'>('в ожидании')
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const [form, setForm] = useState<InvoiceMutation>(
     initialData
@@ -315,7 +319,11 @@ export const useInvoiceForm = (initialData?: InvoiceData, onSuccess?: () => void
     } catch (error) {
       console.error(error)
 
-      if (error instanceof Error) {
+      if (isAxios401Error(error) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (error instanceof Error) {
         return error.message
       } else if (typeof error === 'object' && error !== null && 'message' in error) {
         toast.error((error as { message: string }).message)

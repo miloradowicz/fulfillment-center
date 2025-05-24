@@ -3,6 +3,9 @@ import { selectAllInvoices } from '@/store/slices/invoiceSlice'
 import { useCallback, useEffect, useState } from 'react'
 import { archiveInvoice, fetchInvoices } from '@/store/thunks/invoiceThunk'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
+import { isAxios401Error } from '@/utils/helpers'
 
 export const useInvoicesList = () => {
   const dispatch = useAppDispatch()
@@ -10,6 +13,9 @@ export const useInvoicesList = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [archiveModalOpen, setArchiveModalOpen] = useState(false)
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null)
+
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const fetchAllInvoices = useCallback(async () => {
     await dispatch(fetchInvoices())
@@ -37,8 +43,14 @@ export const useInvoicesList = () => {
         await fetchAllInvoices()
       }
     } catch (e) {
-      toast.error('Ошибка при архивировании счёта.')
-      console.error(e)
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        toast.error('Ошибка при архивировании счёта.')
+        console.error(e)
+      }
     } finally {
       handleClose()
     }

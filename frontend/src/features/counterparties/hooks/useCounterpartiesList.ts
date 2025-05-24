@@ -8,12 +8,15 @@ import { selectAllCounterparties, selectLoadingFetch } from '@/store/slices/coun
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { Counterparty } from '@/types'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
+import { isAxios401Error } from '@/utils/helpers'
 
 export const useCounterpartiesList = () => {
   const dispatch = useAppDispatch()
   const counterparties = useAppSelector(selectAllCounterparties)
   const isLoading = useAppSelector(selectLoadingFetch)
   const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const [confirmationModalOpen, setConfirmationModalOpen] = useState(false)
   const [counterpartyToDelete, setCounterpartyToDelete] = useState<Counterparty | null>(null)
@@ -34,15 +37,21 @@ export const useCounterpartiesList = () => {
       void fetchAllCounterparties()
       toast.success('Контрагент успешно архивирован!')
     } catch (e) {
-      console.error(e)
-      let errorMessage = 'Не удалось архивировать контрагента'
-
-      if (e instanceof Error) {
-        errorMessage = e.message
-      } else if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string') {
-        errorMessage = e.message
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        console.error(e)
+        let errorMessage = 'Не удалось архивировать контрагента'
+        
+        if (e instanceof Error) {
+          errorMessage = e.message
+        } else if (typeof e === 'object' && e !== null && 'message' in e && typeof e.message === 'string') {
+          errorMessage = e.message
+        }
+        toast.error(errorMessage)
       }
-      toast.error(errorMessage)
     }
   }
 

@@ -51,7 +51,7 @@ const CopyText: React.FC<Props> = ({ text, children, className }) => {
             {text}
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="top">{tooltipText}</TooltipContent>
+        <TooltipContent side="left">{tooltipText}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   )

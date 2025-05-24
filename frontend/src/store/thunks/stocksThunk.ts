@@ -42,7 +42,7 @@ export const archiveStock = createAsyncThunk<{ id: string }, string, { rejectVal
       await axiosAPI.patch(`/stocks/${ stockId }/archive`)
       return { id: stockId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -57,7 +57,7 @@ export const unarchiveStock = createAsyncThunk<{ id: string }, string, { rejectV
       await axiosAPI.patch(`/stocks/${ stockId }/unarchive`)
       return { id: stockId }
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e
@@ -71,7 +71,7 @@ export const deleteStock = createAsyncThunk<void, string, { rejectValue: GlobalE
     try {
       await axiosAPI.delete(`/stocks/${ stockId }`)
     } catch (e) {
-      if (isAxiosError(e) && e.response) {
+      if (isAxiosError(e) && e.response && e.response.status !== 401) {
         return rejectWithValue(e.response.data as GlobalError)
       }
       throw e

@@ -4,8 +4,9 @@ import { selectLoadingFetchOrder, selectPopulateOrder } from '@/store/slices/ord
 import { archiveOrder, cancelOrder, fetchOrderByIdWithPopulate } from '@/store/thunks/orderThunk.ts'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
 import { ExtendedNavigator, getOS } from '@/utils/getOS.ts'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 export const useOrderDetails = () => {
   const { id } = useParams()
@@ -13,6 +14,7 @@ export const useOrderDetails = () => {
   const order = useAppSelector(selectPopulateOrder)
   const loading = useAppSelector(selectLoadingFetchOrder)
   const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const [open, setOpen] = useState(false)
   const [openArchiveModal, setOpenArchiveModal] = useState(false)
@@ -41,7 +43,11 @@ export const useOrderDetails = () => {
         toast.success('Заказ успешно архивирован!')
       }
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось архивировать заказ')
@@ -59,8 +65,14 @@ export const useOrderDetails = () => {
         toast.success('Заказ успешно отменен!')
       }
     } catch (e) {
-      console.error(e)
-      toast.error('Ошибка при отмене заказа')
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        console.error(e)
+        toast.error('Ошибка при отмене заказа')
+      }
     }
     setConfirmCancelModalOpen(false)
   }

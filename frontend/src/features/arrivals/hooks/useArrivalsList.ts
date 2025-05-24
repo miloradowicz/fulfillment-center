@@ -5,7 +5,9 @@ import { archiveArrival, cancelArrival, fetchPopulatedArrivals } from '@/store/t
 import { toast } from 'react-toastify'
 import { ArrivalWithClient } from '@/types'
 import { fetchArchivedOrders } from '@/store/thunks/orderThunk.ts'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 export const useArrivalsList = () => {
   const dispatch = useAppDispatch()
@@ -15,6 +17,8 @@ export const useArrivalsList = () => {
   const [selectedArrivalId, setSelectedArrivalId] = useState<string | null>(null)
   const [arrivalToCancel, setArrivalToCancel] = useState<ArrivalWithClient | null>(null)
   const [openCancelModal, setOpenCancelModal] = useState(false)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const fetchAllArrivals = useCallback(async () => {
     await dispatch(fetchPopulatedArrivals())
@@ -42,7 +46,11 @@ export const useArrivalsList = () => {
         toast.success('Поставка успешно архивирована.')
       }
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось архивировать поставку')
@@ -60,8 +68,14 @@ export const useArrivalsList = () => {
       toast.success('Поставка успешно отменена!')
       dispatch(fetchArchivedOrders())
     } catch (e) {
-      toast.error('Ошибка при отмене поставки.')
-      console.error(e)
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        toast.error('Ошибка при отмене поставки.')
+        console.error(e)
+      }
     }
   }
   const handleCancelConfirm = async () => {

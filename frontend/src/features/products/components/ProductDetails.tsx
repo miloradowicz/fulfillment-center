@@ -5,6 +5,7 @@ import { selectProductWithPopulate } from '@/store/slices/productSlice.ts'
 import useProductActions from '@/features/products/hooks/useProductActions.ts'
 import { Link } from 'react-router-dom'
 import LogsAccordionView from '@/components/LogsAccordionView/LogsAccordionView.tsx'
+import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
 
 interface Props {
   id?: string
@@ -31,16 +32,18 @@ const ProductDetails: React.FC<Props> = ({ id }) => {
             <h5 className="font-bold">{product.title}</h5>
           </div>
 
-          <div className="flex items-center justify-between gap-2 px-4">
-            <p className="font-bold text-muted-foreground">Клиент</p>
-            <Link
-              to={`/clients/${ product.client._id }`}
-              className="inline-flex items-center gap-1 font-bold hover:text-blue-500 transition-colors"
-            >
-              {product.client.name}
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </div>
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+            <div className="flex items-center justify-between gap-2 px-4">
+              <p className="font-bold text-muted-foreground">Клиент</p>
+              <Link
+                to={`/clients/${ product.client._id }`}
+                className="inline-flex items-center gap-1 font-bold hover:text-blue-500 transition-colors"
+              >
+                {product.client.name}
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </ProtectedElement>
 
           <div className="flex items-center gap-2 px-4 justify-between">
             <p className="font-bold text-muted-foreground">Артикул</p>

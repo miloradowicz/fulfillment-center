@@ -9,7 +9,9 @@ import { toast } from 'react-toastify'
 import {
   selectAllArchivedProducts, selectLoadingFetchAllArchivedProduct,
 } from '@/store/slices/productSlice.ts'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const useArchivedProductActions = () => {
   const dispatch = useAppDispatch()
@@ -18,15 +20,20 @@ const useArchivedProductActions = () => {
   const [productToActionId, setProductToActionId] = useState<string | null>(null)
   const loading = useAppSelector(selectLoadingFetchAllArchivedProduct)
   const [actionType, setActionType] = useState<'delete' | 'unarchive'>('delete')
-
-
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
+  
   const deleteOneProduct = async (id: string) => {
     try {
       await dispatch(deleteProduct(id)).unwrap()
       await dispatch(fetchArchivedProducts())
       toast.success('Товар успешно удален!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось удалить товар')
@@ -41,7 +48,11 @@ const useArchivedProductActions = () => {
       fetchArchivedProducts()
       toast.success('Товар успешно восстановлен!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось восстановить товар')

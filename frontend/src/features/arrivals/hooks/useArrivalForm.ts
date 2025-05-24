@@ -25,12 +25,13 @@ import { ItemType } from '@/constants.ts'
 import { fetchServices } from '@/store/thunks/serviceThunk.ts'
 import { ArrivalData, ErrorMessages, ItemInitialStateMap } from '../utils/arrivalTypes.ts'
 import { selectAllServices } from '@/store/slices/serviceSlice.ts'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { deleteFile } from '@/store/thunks/deleteFileThunk.ts'
 import { useFileDeleteWithModal } from '@/hooks/UseFileRemoval.ts'
 import { PopoverType } from '@/components/CustomSelect/CustomSelect.tsx'
 import { normalizeField } from '@/utils/normalizeField.ts'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
+import { selectUser, unsetUser } from '@/store/slices/authSlice.ts'
 
 export const useArrivalForm = (initialData?: ArrivalData, onSuccess?: () => void) => {
   const dispatch = useAppDispatch()
@@ -42,6 +43,8 @@ export const useArrivalForm = (initialData?: ArrivalData, onSuccess?: () => void
   const isLoading = useAppSelector(selectLoadingAddArrival)
   const services = useAppSelector(selectAllServices)
   const location = useLocation()
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const [form, setForm] = useState<ArrivalMutation>(
     initialData
@@ -336,7 +339,11 @@ export const useArrivalForm = (initialData?: ArrivalData, onSuccess?: () => void
 
       onSuccess?.()
     } catch (e) {
-      if (isGlobalError(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e)) {
         toast.error(e.message)
       } else if (hasMessage(e)) {
         toast.error(e.message)

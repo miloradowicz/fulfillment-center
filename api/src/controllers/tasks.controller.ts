@@ -46,7 +46,7 @@ export class TasksController {
     return this.tasksService.create(taskDto, userId)
   }
 
-  @Roles('super-admin', 'admin', 'manager')
+  @Roles('stock-worker', 'manager', 'admin', 'super-admin')
   @Put(':id')
   async updateTask(@Param('id') id: string, @Body() taskDto: UpdateTaskDto, @Req() req: RequestWithUser) {
     const userId = req.user._id

@@ -70,11 +70,6 @@ const OrdersDataList: React.FC<Props> = ({ orders, handleDelete, onEdit, handleC
         row.original.delivered_at ? dayjs(row.original.delivered_at).format('DD.MM.YYYY') : 'Не доставлен',
     },
     {
-      accessorKey: 'price',
-      header: 'Стоимость',
-      cell: ({ row }) => row.original.price,
-    },
-    {
       accessorKey: 'status',
       header: 'Статус',
       cell: ({ row }) => <StatusOrderCell row={row.original} />,

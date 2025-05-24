@@ -1,9 +1,11 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks.ts'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
-import { hasMessage, isGlobalError } from '@/utils/helpers.ts'
+import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
 import { selectAllArchivedTasks, selectLoadingFetchArchivedTasks } from '@/store/slices/taskSlice.ts'
 import { deleteTask, fetchArchivedTasks, unarchiveTask } from '@/store/thunks/tasksThunk.ts'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 
 const useArchivedTasksActions = () => {
@@ -13,6 +15,8 @@ const useArchivedTasksActions = () => {
   const [actionType, setActionType] = useState<'delete' | 'unarchive'>('delete')
   const tasks = useAppSelector(selectAllArchivedTasks)
   const loading = useAppSelector(selectLoadingFetchArchivedTasks)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const deleteOneTask = async (id: string) => {
     try {
@@ -20,7 +24,11 @@ const useArchivedTasksActions = () => {
       await dispatch(fetchArchivedTasks())
       toast.success('Задача успешно удалена!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось удалить задачу')
@@ -35,7 +43,11 @@ const useArchivedTasksActions = () => {
       await dispatch(fetchArchivedTasks())
       toast.success('Задача успешно восстановлена!')
     } catch (e) {
-      if (isGlobalError(e) || hasMessage(e)) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isGlobalError(e) || hasMessage(e)) {
         toast.error(e.message)
       } else {
         toast.error('Не удалось восстановить задачу')

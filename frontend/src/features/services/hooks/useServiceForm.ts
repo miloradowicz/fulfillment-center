@@ -9,8 +9,10 @@ import { toast } from 'react-toastify'
 import { clearCreationAndModificationError as clearServiceCreateError } from '@/store/slices/serviceSlice'
 import { clearCreationAndModificationError as clearServiceCategoryCreateError } from '@/store/slices/serviceCategorySlice'
 import { isAxiosError } from 'axios'
-import { isGlobalError, isServiceCategory, isValidationError } from '@/utils/helpers'
+import { isAxios401Error, isGlobalError, isServiceCategory, isValidationError } from '@/utils/helpers'
 import { positiveDecimalNumber } from '@/constants'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 
 const requiredFields: (keyof Form)[] = ['name', 'serviceCategory', 'price']
@@ -56,6 +58,8 @@ const useServiceForm = (serviceId?: string, onClose?: () => void) => {
 
   const [inputValue, setInputValue] = useState('')
   const [open, setOpen] = useState(false)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   useEffect(() => {
     dispatch(fetchServiceCategories())
@@ -140,6 +144,12 @@ const useServiceForm = (serviceId?: string, onClose?: () => void) => {
           serviceCategory: category,
         }))
       } catch (e) {
+        if (isAxios401Error(e) && currentUser) {
+          toast.error('Другой пользователь зашел в данный аккаунт')
+          dispatch(unsetUser())
+          navigate('/login')
+        }
+
         setErrors(prev => ({
           ...prev,
           serviceCategory: 'Не удалось создать категорию',
@@ -161,8 +171,14 @@ const useServiceForm = (serviceId?: string, onClose?: () => void) => {
       }
       toast.success('Категория успешно удалена')
     } catch (error) {
-      toast.error('Не удалось удалить категорию')
-      console.error(error)
+      if (isAxios401Error(error)) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else {
+        toast.error('Не удалось удалить категорию')
+        console.error(error)
+      }
     }
   }
 
@@ -240,7 +256,11 @@ const useServiceForm = (serviceId?: string, onClose?: () => void) => {
         setForm(initialState)
       }
     } catch (e) {
-      if (isAxiosError(e) && e.response?.data) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      } else if (isAxiosError(e) && e.response?.data) {
         if (isGlobalError(e.response.data)) {
           toast.error(e.response.data.message)
         } else {
