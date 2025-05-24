@@ -186,6 +186,17 @@ export class ArrivalsService {
     const existingArrival = await this.arrivalModel.findById(id)
     if (!existingArrival) throw new NotFoundException('Поставка не найдена')
 
+    if (files.length > 0) {
+      const documentPaths = files.map(file => ({
+        document: this.filesService.getFilePath(file.filename),
+      }))
+      arrivalDto.documents = [...(existingArrival.documents || []), ...documentPaths]
+    }
+
+    if (!Array.isArray(arrivalDto.services)) {
+      arrivalDto.services = []
+    }
+
     const updateData = { ...arrivalDto }
 
     const previousStatus = existingArrival.arrival_status
@@ -212,17 +223,6 @@ export class ArrivalsService {
       arrivalDtoObj,
       userId,
     )
-
-    if (files.length > 0) {
-      const documentPaths = files.map(file => ({
-        document: this.filesService.getFilePath(file.filename),
-      }))
-      arrivalDto.documents = [...(existingArrival.documents || []), ...documentPaths]
-    }
-
-    if (!Array.isArray(arrivalDto.services)) {
-      arrivalDto.services = []
-    }
 
     this.stockManipulationService.init()
 
