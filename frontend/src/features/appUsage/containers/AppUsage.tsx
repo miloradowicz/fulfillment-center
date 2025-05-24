@@ -57,7 +57,7 @@ const AppUsage = () =>  {
               <TabsTrigger className={tabTriggerStyles} value="clients">Клиенты</TabsTrigger>
             </ProtectedElement>
 
-            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
               <TabsTrigger className={tabTriggerStyles} value="products">Товары</TabsTrigger>
             </ProtectedElement>
 
@@ -106,7 +106,7 @@ const AppUsage = () =>  {
         </TabsContent>
 
         <TabsContent value="products">
-          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+          <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager', 'stock-worker']}>
             <ProductOverview />
           </ProtectedElement>
         </TabsContent>

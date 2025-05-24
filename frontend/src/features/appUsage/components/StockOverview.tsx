@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
 
 const stockImages = [
   '/app-usage/stocks/stocks-list.png',
@@ -85,32 +86,35 @@ const StockOverview = () => {
           />
         </div>
 
-        <div>
-          <h3 className="font-semibold">Списание товаров</h3>
-          <p>
-            Форма списания товаров включает в себя:
-          </p>
-          <ul className="list-disc pl-5 space-y-2">
+        <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+          <div>
+            <h3 className="font-semibold">Списание товаров</h3>
+            <p>
+              Форма списания товаров включает в себя:
+            </p>
+            <ul className="list-disc pl-5 space-y-2">
 
-            <li>
-              <strong>Клиент</strong> - владелец товара (выбирается из списка)
-            </li>
-            <li>
-              <strong>Товар</strong> - поиск по названию/артикулу среди товаров выбранного клиента
-            </li>
-            <li>
-              <strong>Количество</strong> списываемого товара
-            </li>
-            <li>
-              <strong>Причина списания</strong>
-            </li>
-          </ul>
-          <img
-            src={stockImages[3]}
-            alt="Форма списания товаров"
-            className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
-          />
-        </div>
+              <li>
+                <strong>Клиент</strong> - владелец товара (выбирается из списка)
+              </li>
+              <li>
+                <strong>Товар</strong> - поиск по названию/артикулу среди товаров выбранного клиента
+              </li>
+              <li>
+                <strong>Количество</strong> списываемого товара
+              </li>
+              <li>
+                <strong>Причина списания</strong>
+              </li>
+            </ul>
+            <img
+              src={stockImages[3]}
+              alt="Форма списания товаров"
+              className="mt-2 rounded-lg border shadow-sm w-5/6 mx-auto"
+            />
+          </div>
+
+        </ProtectedElement>
 
         <div>
           <h3 className="font-semibold">Архивация</h3>
