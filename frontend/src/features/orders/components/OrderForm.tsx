@@ -114,18 +114,6 @@ const OrderForm: React.FC<Props> = ({ initialData, onSuccess }) => {
           renderValue={stock => stock.name}
         />
 
-        <Label htmlFor="price">Сумма заказа</Label>
-        <InputWithError
-          id="price"
-          type="number"
-          name="price"
-          placeholder="Укажите сумму заказа"
-          value={form.price || ''}
-          onChange={e => inputChangeHandler(e, setForm)}
-          error={errors.price || getFieldError('price', error)}
-          onBlur={e => handleBlur('price', e.target.value)}
-        />
-
         <FormDatePicker
           label="Дата отправки"
           value={form.sent_at}

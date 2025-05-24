@@ -1,4 +1,5 @@
 import { ServiceCategory, ValidationError } from '@/types'
+import { isAxiosError } from 'axios'
 
 export const isValidationError = (obj: unknown): obj is ValidationError =>
   typeof obj === 'object' && obj !== null &&
@@ -22,3 +23,12 @@ export const isServiceCategory = (obj: unknown): obj is ServiceCategory =>
   typeof obj === 'object' && obj !== null &&
   '_id' in obj && typeof obj._id === 'string' &&
   'name' in obj && typeof obj.name === 'string'
+
+export const isAxios401Error = (obj: unknown) =>
+  (isAxiosError(obj) && obj.response?.status === 401) ||
+  (typeof obj === 'object' && obj !== null &&
+  'error' in obj && typeof obj.error === 'string' && obj.error === 'Unauthorized' &&
+  'statusCode' in obj && typeof obj.statusCode === 'number' && obj.statusCode === 401) ||
+  (typeof obj === 'object' && obj !== null &&
+  'name' in obj && typeof obj.name === 'string' && obj.name === 'AxiosError' &&
+  'message' in obj && typeof obj.message === 'string' && obj.message === 'Request failed with status code 401')

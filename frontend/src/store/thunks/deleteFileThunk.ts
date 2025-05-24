@@ -12,7 +12,7 @@ export const deleteFile = createAsyncThunk<
     await axiosAPI.delete(`/files/${ filename }`)
     return filename
   } catch (e) {
-    if (isAxiosError(e) && e.response) {
+    if (isAxiosError(e) && e.response && e.response.status !== 401) {
       return rejectWithValue(e.response.data as GlobalError)
     }
     throw e

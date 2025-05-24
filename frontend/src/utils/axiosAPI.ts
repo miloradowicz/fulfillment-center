@@ -10,17 +10,6 @@ const axiosAPI = axios.create({
   xsrfCookieName: 'XSRF-TOKEN',
 })
 
-// axiosAPI.interceptors.request.use(config => {
-//   const method = config.method?.toLowerCase()
-//
-//   if (config.data && (method === 'post' || method === 'put' || method === 'patch')) {
-//     config.data = sanitizeData(config.data)
-//   }
-//
-//   return config
-// }, error => {
-//   return Promise.reject(error)
-// })
 
 export const addCsrf = async () => {
   try {

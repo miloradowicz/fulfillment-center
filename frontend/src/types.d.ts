@@ -191,7 +191,6 @@ export interface Order {
   _id: string
   client: string
   products: ProductOrder[]
-  price: number
   stock: string
   sent_at: string
   delivered_at?: string

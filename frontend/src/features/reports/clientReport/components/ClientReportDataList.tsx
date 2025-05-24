@@ -141,7 +141,7 @@ const ClientReportDataList: React.FC<PropsClientTable> = ({ ClientFullReport }) 
   return (
     <div className="max-w-full overflow-x-auto mt-3 ">
       <h6 className="text-center text-base sm:text-xl mx-auto mb-3 break-words w-[80%]">
-        Количество заказов каждого клиента за период с {startDate} по {endDate}
+        Данные по клиентам за период с {startDate} по {endDate}
       </h6>
       <DataTable columns={columns} data={ClientFullReport ?? []} />
     </div>

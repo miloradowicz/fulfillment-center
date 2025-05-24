@@ -12,6 +12,9 @@ import { fetchArrivals } from '@/store/thunks/arrivalThunk.ts'
 import { fetchOrders } from '@/store/thunks/orderThunk.ts'
 import { fetchUsers } from '@/store/thunks/userThunk.ts'
 import { PopoverType } from '@/components/CustomSelect/CustomSelect.tsx'
+import { useNavigate } from 'react-router-dom'
+import { selectUser, unsetUser } from '@/store/slices/authSlice.ts'
+import { isAxios401Error } from '@/utils/helpers.ts'
 
 const userSelectionError = 'Выберите пользователя'
 const titleMissingError =  'Введите название задачи'
@@ -28,6 +31,8 @@ const UseTaskForm = (onSuccess?: () => void, initialData?: TaskWithPopulate) => 
   const addLoading = useAppSelector(selectLoadingAddTask)
   const updateLoading = useAppSelector(selectLoadingUpdateTask)
   const error = useAppSelector(selectCreateError)
+  const navigate = useNavigate()
+  const currentUser = useAppSelector(selectUser)
 
   const [activePopover, setActivePopover] = useState<PopoverType>(null)
 
@@ -81,6 +86,11 @@ const UseTaskForm = (onSuccess?: () => void, initialData?: TaskWithPopulate) => 
       onSuccess?.()
       setErrors(initialErrorState)
     } catch (e) {
+      if (isAxios401Error(e) && currentUser) {
+        toast.error('Другой пользователь зашел в данный аккаунт')
+        dispatch(unsetUser())
+        navigate('/login')
+      }
       console.error(e)
     }
   }
