@@ -64,7 +64,7 @@ export class ArrivalsService {
     if (populate) {
       arrival = await this.arrivalModel
         .findById(id)
-        .populate('client products.product defects.product received_amount.product stock shipping_agent')
+        .populate('client products.product defects.product received_amount.product stock shipping_agent invoice')
         .populate({
           path: 'services.service',
           populate: {
@@ -73,14 +73,20 @@ export class ArrivalsService {
           },
         })
         .populate({ path: 'logs.user', select: '-password -token' })
+        .lean()
     } else {
-      arrival = await this.arrivalModel.findById(id)
+      arrival = await this.arrivalModel.findById(id).lean()
     }
 
     if (!arrival) throw new NotFoundException('Поставка не найдена.')
     if (arrival.isArchived) throw new ForbiddenException('Поставка в архиве.')
 
-    return arrival
+    const invoice = await this.invoiceModel.findOne({ associatedArrival: arrival._id }).lean().exec()
+
+    return {
+      ...arrival,
+      paymentStatus: invoice?.status ?? null,
+    }
   }
 
   async getArchivedOne(id: string, populate: boolean) {

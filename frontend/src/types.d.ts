@@ -159,6 +159,7 @@ export interface Arrival {
   defects?: Defect[]
   services?: ServiceArrival[]
   arrival_status: string
+  paymentStatus: string
   received_amount?: ProductArrival[]
   logs?: Log[]
   arrivalNumber?: string

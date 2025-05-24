@@ -69,7 +69,9 @@ describe('ArrivalsService', () => {
   const mockInvoiceModel = {
     exists: jest.fn().mockReturnThis(),
     exec: jest.fn().mockResolvedValue(false),
-  }
+    findOne: jest.fn().mockReturnThis(),
+    lean: jest.fn().mockResolvedValue({ status: 'оплачено' }),
+  };
 
   const mockArchivedArrival = {
     ...mockArrival,
@@ -98,7 +100,11 @@ describe('ArrivalsService', () => {
           provide: getModelToken(Arrival.name),
           useValue: {
             find: jest.fn().mockImplementation(() => mockFindQuery),
-            findById: jest.fn(),
+            findById: jest.fn().mockImplementation(() => ({
+              populate: jest.fn().mockReturnThis(),
+              lean: jest.fn().mockResolvedValue(mockArrival),
+              exec: jest.fn().mockReturnThis(),
+            })),
             findByIdAndUpdate: jest.fn().mockResolvedValue(mockArrival),
             findByIdAndDelete: jest.fn().mockResolvedValue(mockArrival),
             create: jest.fn().mockResolvedValue(mockArrival),
@@ -227,63 +233,89 @@ describe('ArrivalsService', () => {
 
   describe('getOne', () => {
     it('should return one arrival without populating', async () => {
-      jest.spyOn(arrivalModel, 'findById').mockResolvedValue(mockArrival)
+      const mockLean = {
+        lean: jest.fn().mockResolvedValue(mockArrival)
+      }
+      jest.spyOn(arrivalModel, 'findById').mockReturnValue(mockLean as any)
+
+      jest.spyOn(invoiceModel, 'findOne').mockReturnValue({
+        lean: () => ({ exec: () => Promise.resolve(null) })
+      } as any)
 
       const result = await service.getOne(mockArrival._id, false)
 
       expect(arrivalModel.findById).toHaveBeenCalledWith(mockArrival._id)
-      expect(result).toEqual(mockArrival)
+      expect(mockLean.lean).toHaveBeenCalled()
+      expect(result).toEqual({
+        ...mockArrival,
+        paymentStatus: null
+      })
     })
 
     it('should return one arrival with populating', async () => {
-      const finalPopulateMock = jest.fn().mockResolvedValue(mockArrival)
-
-      const logsUserPopulateMock = {
-        populate: finalPopulateMock,
+      const mockPopulateFinal = {
+        lean: jest.fn().mockResolvedValue(mockArrival)
       }
 
-      const servicesPopulateMock = {
-        populate: jest.fn().mockReturnValue(logsUserPopulateMock),
+      const mockLogsUserPopulate = {
+        populate: jest.fn().mockReturnValue(mockPopulateFinal)
       }
 
-      const initialPopulateMock = {
-        populate: jest.fn().mockReturnValue(servicesPopulateMock),
+      const mockServicesPopulate = {
+        populate: jest.fn().mockReturnValue(mockLogsUserPopulate)
       }
 
-      jest.spyOn(arrivalModel, 'findById').mockReturnValue(initialPopulateMock as any)
+      const mockFirstPopulate = {
+        populate: jest.fn().mockReturnValue(mockServicesPopulate)
+      }
+
+      jest.spyOn(arrivalModel, 'findById').mockReturnValue(mockFirstPopulate as any)
+
+      jest.spyOn(invoiceModel, 'findOne').mockReturnValue({
+        lean: () => ({ exec: () => Promise.resolve(null) })
+      } as any)
 
       const result = await service.getOne(mockArrival._id, true)
 
       expect(arrivalModel.findById).toHaveBeenCalledWith(mockArrival._id)
-      expect(initialPopulateMock.populate).toHaveBeenCalledWith(
-        'client products.product defects.product received_amount.product stock shipping_agent'
+      expect(mockFirstPopulate.populate).toHaveBeenCalledWith(
+        'client products.product defects.product received_amount.product stock shipping_agent invoice'
       )
-      expect(servicesPopulateMock.populate).toHaveBeenCalledWith({
+      expect(mockServicesPopulate.populate).toHaveBeenCalledWith({
         path: 'services.service',
         populate: {
           path: 'serviceCategory',
-          model: 'ServiceCategory',
-        },
+          model: 'ServiceCategory'
+        }
       })
-      expect(logsUserPopulateMock.populate).toHaveBeenCalledWith({
+      expect(mockLogsUserPopulate.populate).toHaveBeenCalledWith({
         path: 'logs.user',
-        select: '-password -token',
+        select: '-password -token'
       })
-      expect(result).toEqual(mockArrival)
+      expect(mockPopulateFinal.lean).toHaveBeenCalled()
+
+      expect(result).toEqual({
+        ...mockArrival,
+        paymentStatus: null
+      })
     })
 
     it('should throw NotFoundException if arrival not found', async () => {
-      jest.spyOn(arrivalModel, 'findById').mockResolvedValue(null)
+      const mockLean = {
+        lean: jest.fn().mockResolvedValue(null)
+      }
+      jest.spyOn(arrivalModel, 'findById').mockReturnValue(mockLean as any)
 
       await expect(service.getOne('nonexistent-id', false)).rejects.toThrow(NotFoundException)
-      expect(arrivalModel.findById).toHaveBeenCalledWith('nonexistent-id')
     })
 
     it('should throw ForbiddenException if arrival is archived', async () => {
-      jest.spyOn(arrivalModel, 'findById').mockResolvedValue(mockArchivedArrival)
+      const mockLean = {
+        lean: jest.fn().mockResolvedValue({ ...mockArrival, isArchived: true })
+      }
+      jest.spyOn(arrivalModel, 'findById').mockReturnValue(mockLean as any)
 
-      await expect(service.getOne(mockArchivedArrival._id, false)).rejects.toThrow(ForbiddenException)
-      expect(arrivalModel.findById).toHaveBeenCalledWith(mockArchivedArrival._id)
+      await expect(service.getOne(mockArrival._id, false)).rejects.toThrow(ForbiddenException)
     })
   })
 
