@@ -5,7 +5,6 @@ import { useAppSelector } from '@/app/hooks.ts'
 import { selectUser } from '@/store/slices/authSlice.ts'
 import { useEffect } from 'react'
 
-
 const images = [
   '/assets/login/illustration-1.jpg',
   '/assets/login/illustration-2.jpg',
@@ -23,6 +22,8 @@ export default function LoginPage() {
     if (user) {
       if (user.role === 'stock-worker') {
         navigate('/tasks', { replace: true })
+      } else if (user.role === 'manager') {
+        navigate('/clients', { replace: true })
       } else {
         navigate('/admin', { replace: true })
       }
