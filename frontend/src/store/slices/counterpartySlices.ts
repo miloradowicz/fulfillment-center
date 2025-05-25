@@ -45,16 +45,13 @@ const initialState: CounterpartyState = {
 export const selectAllCounterparties = (state: RootState) => state.counterparties.counterparties
 export const selectAllArchivedCounterparties = (state: RootState) => state.counterparties.archivedCounterparties
 export const selectOneCounterparty = (state: RootState) => state.counterparties.counterparty
-export const selectCounterpartyError = (state: RootState) => state.counterparties.error
 export const selectCounterpartyCreateError = (state: RootState) => state.counterparties.createError
 export const selectCounterpartyUpdateError = (state: RootState) => state.counterparties.updateError
 
 export const selectLoadingFetch = (state: RootState) => state.counterparties.loadingFetch
 export const selectLoadingFetchArchive = (state: RootState) => state.counterparties.loadingFetchArchive
 export const selectLoadingAdd = (state: RootState) => state.counterparties.loadingAdd
-export const selectLoadingDelete = (state: RootState) => state.counterparties.loadingDelete
 export const selectLoadingUpdate = (state: RootState) => state.counterparties.loadingUpdate
-export const selectLoadingArchive = (state: RootState) => state.counterparties.loadingArchive
 
 const counterpartiesSlice = createSlice({
   name: 'counterparties',
