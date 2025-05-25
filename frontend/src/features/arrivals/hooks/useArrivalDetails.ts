@@ -8,10 +8,17 @@ import {
 import { archiveArrival, cancelArrival, fetchArrivalByIdWithPopulate } from '@/store/thunks/arrivalThunk.ts'
 import { toast } from 'react-toastify'
 import { hasMessage, isAxios401Error } from '@/utils/helpers.ts'
-import { ExtendedNavigator, getOS } from '@/utils/getOS.ts'
 import { selectUser, unsetUser } from '@/store/slices/authSlice'
 
 const useArrivalDetails = () => {
+  const detectOS = (): string => {
+    const userAgent = navigator.userAgent
+    if (/Mac/.test(userAgent)) return 'Mac OS'
+    if (/Windows/.test(userAgent)) return 'Windows'
+    if (/Android/.test(userAgent)) return 'Android'
+    return 'Other'
+  }
+
   const { arrivalId } = useParams()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -26,7 +33,7 @@ const useArrivalDetails = () => {
   const [isArchived, setIsArchived] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [tabs, setTabs] = useState(0)
-  const [os, setOS] = useState<string>('Detecting...')
+  const [os] = useState<string>(detectOS())
 
   useEffect(() => {
     if (arrivalId) {
@@ -34,10 +41,6 @@ const useArrivalDetails = () => {
     }
   }, [dispatch, arrivalId])
 
-
-  useEffect(() => {
-    getOS(navigator as ExtendedNavigator).then(setOS)
-  }, [])
 
   const handleArchive = async () => {
     if (arrivalId) {
