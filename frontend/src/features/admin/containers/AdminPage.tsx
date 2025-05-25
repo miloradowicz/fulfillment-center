@@ -6,6 +6,9 @@ import ServicesPage from '@/features/services/containers/ServicesPage.tsx'
 import InvoicesPage from '@/features/invoices/containers/InvoicesPage.tsx'
 import { Separator } from '@/components/ui/separator.tsx'
 import { tabTriggerStyles } from '@/utils/commonStyles.ts'
+import { cn } from '@/lib/utils.ts'
+import { useState } from 'react'
+import { getOS } from '@/utils/getOs.ts'
 
 const tabs = [
   { value: 'users', label: 'Сотрудники' },
@@ -16,6 +19,7 @@ const tabs = [
 const AdminPage = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const currentTab = searchParams.get('tab') || 'users'
+  const [os] = useState<string>(getOS())
 
   const handleTabChange = (value: string) => {
     setSearchParams({ tab: value })
@@ -31,7 +35,12 @@ const AdminPage = () => {
       <Tabs value={currentTab} onValueChange={handleTabChange}>
         <div className="flex justify-center">
           <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
-            <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar">
+            <div
+              className={cn(
+                'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
+                os === 'Linux' ? 'hover:pt-[10px]' : '',
+              )}
+            >
               {tabs.map(tab => (
                 <TabsTrigger
                   key={tab.value}

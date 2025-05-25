@@ -37,6 +37,7 @@ const ArrivalDetails = () => {
     confirmCancelModalOpen,
     handleCancel,
     setConfirmCancelModalOpen,
+    os,
   } = useArrivalDetails()
 
   return (
@@ -91,7 +92,6 @@ const ArrivalDetails = () => {
                 </ProtectedElement>
 
                 <div className="space-y-5">
-
                   <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground font-bold">Склад</p>
@@ -144,7 +144,8 @@ const ArrivalDetails = () => {
                   <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                     <div className="space-y-1">
                       <p className="text-sm text-muted-foreground font-bold">Заказчик</p>
-                      <Link to={`/clients/${ arrival.client._id }`}
+                      <Link
+                        to={`/clients/${ arrival.client._id }`}
                         className="inline-flex items-center gap-1 font-bold hover:text-blue-500 transition-colors m-0 p-0"
                       >
                         {arrival.client.name}
@@ -168,7 +169,10 @@ const ArrivalDetails = () => {
                           <ArrowUpRight className="h-4 w-4" />
                         </Link>
                         <div className="flex gap-2 items-center">
-                          <CopyText text={arrival.shipping_agent.phone_number} children={<Phone className="h-4 w-4" />} />
+                          <CopyText
+                            text={arrival.shipping_agent.phone_number}
+                            children={<Phone className="h-4 w-4" />}
+                          />
                         </div>
                       </div>
                     )}
@@ -180,8 +184,13 @@ const ArrivalDetails = () => {
             <div className="rounded-2xl shadow p-6 mb-6">
               <h3 className="font-bold uppercase mb-3 text-muted-foreground text-center">Дополнительно</h3>
               <Tabs value={tabs.toString()} onValueChange={val => setTabs(Number(val))}>
-                <TabsList className='mb-5 sm:w-auto w-full rounded-3xl'>
-                  <div className='inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar'>
+                <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
+                  <div
+                    className={cn(
+                      'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
+                      os === 'Linux' ? 'hover:pt-[10px]' : '',
+                    )}
+                  >
                     <TabsTrigger value="0" className={cn(tabTriggerStyles, 'sm:text-sm')}>
                       Отправленные
                     </TabsTrigger>

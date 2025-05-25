@@ -9,6 +9,7 @@ import { archiveArrival, cancelArrival, fetchArrivalByIdWithPopulate } from '@/s
 import { toast } from 'react-toastify'
 import { hasMessage, isAxios401Error } from '@/utils/helpers.ts'
 import { selectUser, unsetUser } from '@/store/slices/authSlice'
+import { getOS } from '@/utils/getOs'
 
 const useArrivalDetails = () => {
   const { arrivalId } = useParams()
@@ -25,6 +26,7 @@ const useArrivalDetails = () => {
   const [isArchived, setIsArchived] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [tabs, setTabs] = useState(0)
+  const [os] = useState<string>(getOS())
 
   useEffect(() => {
     if (arrivalId) {
@@ -92,6 +94,7 @@ const useArrivalDetails = () => {
     handleCancel,
     confirmCancelModalOpen,
     setConfirmCancelModalOpen,
+    os,
   }
 }
 

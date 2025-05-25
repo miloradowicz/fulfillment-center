@@ -37,6 +37,7 @@ const OrderDetails = () => {
     confirmCancelModalOpen,
     handleCancel,
     setConfirmCancelModalOpen,
+    os,
   } = useOrderDetails()
 
   return (
@@ -174,7 +175,12 @@ const OrderDetails = () => {
               <h3 className="font-bold uppercase mb-3 text-muted-foreground">Дополнительно</h3>
               <Tabs value={tabs.toString()} onValueChange={val => setTabs(Number(val))}>
                 <TabsList className='mb-5 sm:w-auto w-full rounded-3xl'>
-                  <div className='inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar'>
+                  <div
+                    className={cn(
+                      'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
+                      os === 'Linux' ? 'hover:pt-[10px]' : '',
+                    )}
+                  >
                     <TabsTrigger value="0" className={cn(tabTriggerStyles, 'sm:text-sm')}>
                       Товары
                     </TabsTrigger>
