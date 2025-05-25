@@ -23,11 +23,24 @@ import CancelButton from '@/components/Buttons/CancelButton.tsx'
 import LogsAccordionView from '@/components/LogsAccordionView/LogsAccordionView.tsx'
 import { apiHost } from '@/constants.ts'
 
-
 const OrderDetails = () => {
-  const { order, loading, open, openArchiveModal, handleArchive, setOpen, setOpenArchiveModal, tabs, setTabs, confirmCancelModalOpen, handleCancel, setConfirmCancelModalOpen, paddingTop, heightTab } =
-    useOrderDetails()
-
+  const {
+    order,
+    loading,
+    open,
+    openArchiveModal,
+    handleArchive,
+    setOpen,
+    setOpenArchiveModal,
+    tabs,
+    setTabs,
+    confirmCancelModalOpen,
+    handleCancel,
+    setConfirmCancelModalOpen,
+    paddingTop,
+    heightTab,
+    os,
+  } = useOrderDetails()
 
   return (
     <>
@@ -117,9 +130,8 @@ const OrderDetails = () => {
                     {order.paymentStatus !== undefined && (
                       <Badge
                         className={cn(
-                          invoiceStatusStyles[
-                            order.paymentStatus as 'в ожидании' | 'оплачено' | 'частично оплачено'
-                          ] || invoiceStatusStyles['в ожидании'],
+                          invoiceStatusStyles[order.paymentStatus as 'в ожидании' | 'оплачено' | 'частично оплачено'] ||
+                            invoiceStatusStyles['в ожидании'],
                           'py-1.5 px-3 font-bold text-center',
                         )}
                       >
@@ -165,7 +177,10 @@ const OrderDetails = () => {
               <h3 className="font-bold uppercase mb-3 text-muted-foreground">Дополнительно</h3>
               <Tabs value={tabs.toString()} onValueChange={val => setTabs(Number(val))}>
                 <TabsList className={`mb-5 w-full ${ heightTab } rounded-3xl`}>
-                  <div className={`inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto ${ paddingTop }`} >
+                  <div className={cn(
+                    `inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar ${ paddingTop }`,
+                    os === 'Linux' ? 'hover:pt-[14px]' : '',
+                  )}>
                     <TabsTrigger value="0" className={cn(tabTriggerStyles, 'sm:text-sm')}>
                       Товары
                     </TabsTrigger>
