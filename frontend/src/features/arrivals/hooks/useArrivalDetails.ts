@@ -9,16 +9,9 @@ import { archiveArrival, cancelArrival, fetchArrivalByIdWithPopulate } from '@/s
 import { toast } from 'react-toastify'
 import { hasMessage, isAxios401Error } from '@/utils/helpers.ts'
 import { selectUser, unsetUser } from '@/store/slices/authSlice'
+import { detectOS } from '@/utils/getOS.ts'
 
 const useArrivalDetails = () => {
-  const detectOS = (): string => {
-    const userAgent = navigator.userAgent
-    if (/Mac/.test(userAgent)) return 'Mac OS'
-    if (/Windows/.test(userAgent)) return 'Windows'
-    if (/Android/.test(userAgent)) return 'Android'
-    return 'Other'
-  }
-
   const { arrivalId } = useParams()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
