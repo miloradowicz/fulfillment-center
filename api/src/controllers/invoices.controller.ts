@@ -17,7 +17,7 @@ export class InvoicesController {
     return await this.invoicesService.getAll()
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived')
   async getArchivedInvoices() {
     return await this.invoicesService.getArchived()
@@ -28,7 +28,7 @@ export class InvoicesController {
     return this.invoicesService.getOne(id)
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getOneArchivedInvoice(@Param('id') id: string, @Query('populate') populate: string) {
     return this.invoicesService.getArchivedOne(id, populate === '1')
