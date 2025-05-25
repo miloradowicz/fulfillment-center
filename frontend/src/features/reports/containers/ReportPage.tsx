@@ -10,8 +10,6 @@ import TaskReport from '../taskPeport/components/TaskReport'
 import ClientReport from '../clientReport/components/ClientReport'
 import Loader from '@/components/Loader/Loader.tsx'
 import { tabTriggerStyles } from '@/utils/commonStyles.ts'
-import { cn } from '@/lib/utils.ts'
-import { getOS } from '@/utils/getOs.ts'
 
 export default function ReportTabs() {
   const [value, setValue] = useState('tasks')
@@ -19,7 +17,6 @@ export default function ReportTabs() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
-  const [os] = useState<string>(getOS())
 
   const tabNames = useMemo(() => ['tasks', 'clients'], [])
 
@@ -54,12 +51,7 @@ export default function ReportTabs() {
       <Tabs value={value} onValueChange={handleChange}>
         <div className="flex justify-center">
           <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
-            <div
-              className={cn(
-                'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
-                os === 'Linux' ? 'hover:pt-[10px]' : '',
-              )}
-            >
+            <div className='inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto'>
               <TabsTrigger className={tabTriggerStyles} value="tasks">
                 Задачи
               </TabsTrigger>

@@ -14,7 +14,6 @@ import { MapPinIcon, Warehouse } from 'lucide-react'
 import CustomButton from '@/components/CustomButton/CustomButton.tsx'
 import StockWriteOffsPage from './StockWriteOffsPage.tsx'
 import LogsAccordionView from '@/components/LogsAccordionView/LogsAccordionView.tsx'
-import { cn } from '@/lib/utils.ts'
 import { tabTriggerStyles } from '@/utils/commonStyles.ts'
 
 const StockDetails = () => {
@@ -32,7 +31,6 @@ const StockDetails = () => {
     tabs,
     currentTab,
     handleTabChange,
-    os,
   } = useStockDetails()
 
   return (
@@ -100,10 +98,7 @@ const StockDetails = () => {
         <Tabs value={currentTab} onValueChange={handleTabChange}>
           <div className="flex justify-center">
             <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
-              <div className={cn(
-                'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
-                os === 'Linux' ? 'hover:pt-[10px]' : '',
-              )}>
+              <div className='inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar'>
                 {tabs.map(tab => (
                   <TabsTrigger
                     key={tab.value}

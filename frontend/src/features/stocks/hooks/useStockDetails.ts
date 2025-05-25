@@ -6,7 +6,6 @@ import { selectIsStocksLoading, selectOneStock } from '@/store/slices/stocksSlic
 import { toast } from 'react-toastify'
 import { hasMessage, isAxios401Error } from '@/utils/helpers.ts'
 import { selectUser, unsetUser } from '@/store/slices/authSlice'
-import { getOS } from '@/utils/getOs.ts'
 
 export const useStockDetails = () => {
   const { stockId } = useParams()
@@ -20,7 +19,6 @@ export const useStockDetails = () => {
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [writeOffModalOpen, setWriteOffModalOpen] = useState(false)
   const [currentTab, setCurrentTab] = useState('products')
-  const [os] = useState<string>(getOS())
 
   const tabs = [
     { value: 'products', label: 'Товары' },
@@ -109,6 +107,5 @@ export const useStockDetails = () => {
     tabs,
     currentTab,
     handleTabChange,
-    os,
   }
 }
