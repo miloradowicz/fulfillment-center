@@ -50,8 +50,8 @@ export default function ReportTabs() {
 
       <Tabs value={value} onValueChange={handleChange}>
         <div className="flex justify-center">
-          <TabsList className="mb-5 sm:w-auto w-full rounded-2xl">
-            <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto">
+          <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
+            <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar">
               <TabsTrigger className={tabTriggerStyles} value="tasks">
                 Задачи
               </TabsTrigger>

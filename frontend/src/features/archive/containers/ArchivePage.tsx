@@ -96,8 +96,8 @@ const ArchivePage = () =>  {
       </div>
 
       <Tabs value={value} onValueChange={handleChange} className="w-full">
-        <TabsList className="mb-5 w-full h-auto rounded-3xl">
-          <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto">
+        <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
+          <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar">
             <TabsTrigger className={tabTriggerStyles} value="clients">Клиенты</TabsTrigger>
             <TabsTrigger className={tabTriggerStyles} value="products">Товары</TabsTrigger>
             <TabsTrigger className={tabTriggerStyles}  value="arrivals">Поставки</TabsTrigger>

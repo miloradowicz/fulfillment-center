@@ -6,7 +6,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { hasMessage, isAxios401Error, isGlobalError } from '@/utils/helpers.ts'
 import { selectUser, unsetUser } from '@/store/slices/authSlice'
-import { detectOS } from '@/utils/getOS.ts'
 
 export const useOrderDetails = () => {
   const { id } = useParams()
@@ -20,7 +19,6 @@ export const useOrderDetails = () => {
   const [openArchiveModal, setOpenArchiveModal] = useState(false)
   const [confirmCancelModalOpen, setConfirmCancelModalOpen] = useState(false)
   const [tabs, setTabs] = useState(0)
-  const [os] = useState<string>(detectOS())
 
   useEffect(() => {
     if (id) {
@@ -28,9 +26,6 @@ export const useOrderDetails = () => {
     }
   }, [dispatch, id])
 
-
-  const paddingTop = os === 'Mac OS' ? 'pt-0' : os === 'Windows' ? 'pt-0': os === 'Android' ? 'pt-0' : os === 'Linux' ? 'py-1' : 'pt-2'
-  const heightTab = os === 'Mac OS' ? 'h-[45px]' : os === 'Windows' ? 'h-[50px]' : os === 'Android' ? 'h-auto' : 'h-[45px]'
 
   const handleArchive = async () => {
     try {
@@ -87,8 +82,5 @@ export const useOrderDetails = () => {
     handleCancel,
     setConfirmCancelModalOpen,
     confirmCancelModalOpen,
-    os,
-    paddingTop,
-    heightTab,
   }
 }
