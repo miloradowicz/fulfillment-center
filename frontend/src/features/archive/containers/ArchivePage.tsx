@@ -26,11 +26,14 @@ import { fetchArchivedUsers } from '@/store/thunks/userThunk.ts'
 import { fetchArchivedServices } from '@/store/thunks/serviceThunk.ts'
 import { fetchArchivedInvoices } from '@/store/thunks/invoiceThunk.ts'
 import { fetchAllArchivedCounterparties } from '@/store/thunks/counterpartyThunk.ts'
+import { cn } from '@/lib/utils.ts'
+import { getOS } from '@/utils/getOs.ts'
 
 const ArchivePage = () =>  {
   const [value, setValue] = useState('clients')
   const location = useLocation()
   const navigate = useNavigate()
+  const [os] = useState<string>(getOS())
 
   const tabNames = React.useMemo(() => ['clients', 'products','arrivals', 'orders', 'tasks', 'stocks', 'counterparties', 'users', 'services', 'invoices'], [])
 
@@ -96,8 +99,13 @@ const ArchivePage = () =>  {
       </div>
 
       <Tabs value={value} onValueChange={handleChange} className="w-full">
-        <TabsList className="mb-5 w-full h-auto rounded-3xl">
-          <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto">
+        <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
+          <div
+            className={cn(
+              'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
+              os === 'Linux' ? 'hover:pt-[10px]' : '',
+            )}
+          >
             <TabsTrigger className={tabTriggerStyles} value="clients">Клиенты</TabsTrigger>
             <TabsTrigger className={tabTriggerStyles} value="products">Товары</TabsTrigger>
             <TabsTrigger className={tabTriggerStyles}  value="arrivals">Поставки</TabsTrigger>

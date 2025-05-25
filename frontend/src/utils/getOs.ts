@@ -1,4 +1,4 @@
-export const detectOS = (): string => {
+export const getOS = (): string => {
   const userAgent = navigator.userAgent
   if (/Windows NT/.test(userAgent)) {
     return 'Windows'

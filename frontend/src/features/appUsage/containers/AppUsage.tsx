@@ -17,11 +17,14 @@ import TaskOverview from '@/features/appUsage/components/TaskOverview.tsx'
 import StockOverview from '@/features/appUsage/components/StockOverview.tsx'
 import AdminPanelOverview from '@/features/appUsage/components/AdminPanelOverview.tsx'
 import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
+import { cn } from '@/lib/utils.ts'
+import { getOS } from '@/utils/getOs.ts'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
   const location = useLocation()
   const navigate = useNavigate()
+  const [os] = useState<string>(getOS())
 
   const tabNames = React.useMemo(() => ['general', 'clients', 'products','arrivals', 'orders', 'tasks', 'stocks', 'counterparties', 'users', 'services', 'invoices'], [])
 
@@ -49,8 +52,13 @@ const AppUsage = () =>  {
       </div>
 
       <Tabs value={value} onValueChange={handleChange} className="w-full">
-        <TabsList className="mb-5 w-full h-auto rounded-3xl">
-          <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto">
+        <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
+          <div
+            className={cn(
+              'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
+              os === 'Linux' ? 'hover:pt-[10px]' : '',
+            )}
+          >
             <TabsTrigger className={tabTriggerStyles} value="general">Общее</TabsTrigger>
 
             <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>

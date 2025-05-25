@@ -9,7 +9,7 @@ import { archiveArrival, cancelArrival, fetchArrivalByIdWithPopulate } from '@/s
 import { toast } from 'react-toastify'
 import { hasMessage, isAxios401Error } from '@/utils/helpers.ts'
 import { selectUser, unsetUser } from '@/store/slices/authSlice'
-import { detectOS } from '@/utils/getOS.ts'
+import { getOS } from '@/utils/getOs'
 
 const useArrivalDetails = () => {
   const { arrivalId } = useParams()
@@ -26,7 +26,7 @@ const useArrivalDetails = () => {
   const [isArchived, setIsArchived] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [tabs, setTabs] = useState(0)
-  const [os] = useState<string>(detectOS())
+  const [os] = useState<string>(getOS())
 
   useEffect(() => {
     if (arrivalId) {
@@ -57,10 +57,6 @@ const useArrivalDetails = () => {
     }
     setConfirmArchiveModalOpen(false)
   }
-
-
-  const paddingTop = os === 'Mac OS' ? 'pt-0' : os === 'Windows' ? 'pt-0': os === 'Android' ? 'pt-0' : os === 'Linux' ? 'py-1' : 'pt-2'
-  const heightTab = os === 'Mac OS' ? 'h-[45px]' : os === 'Windows' ? 'h-[50px]' : os === 'Android' ? 'h-auto' : 'h-[45px]'
 
   const handleCancel = async () => {
     if (arrivalId) {
@@ -99,8 +95,6 @@ const useArrivalDetails = () => {
     confirmCancelModalOpen,
     setConfirmCancelModalOpen,
     os,
-    paddingTop,
-    heightTab,
   }
 }
 
