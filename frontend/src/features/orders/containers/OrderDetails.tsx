@@ -164,7 +164,7 @@ const OrderDetails = () => {
             <div className="rounded-2xl shadow p-6 mb-6">
               <h3 className="font-bold uppercase mb-3 text-muted-foreground">Дополнительно</h3>
               <Tabs value={tabs.toString()} onValueChange={val => setTabs(Number(val))}>
-                <TabsList className={`mb-5 w-full ${ heightTab } rounded-2xl`}>
+                <TabsList className={`mb-5 w-full ${ heightTab } rounded-3xl`}>
                   <div className={`inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto ${ paddingTop }`} >
                     <TabsTrigger value="0" className={cn(tabTriggerStyles, 'sm:text-sm')}>
                       Товары
@@ -208,7 +208,7 @@ const OrderDetails = () => {
                         order.documents.map((doc, idx) => (
                           <Link
                             key={idx}
-                            to={`${apiHost}/uploads/documents/${ basename(doc.document) }`}
+                            to={`${ apiHost }/uploads/documents/${ basename(doc.document) }`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex justify-center items-center gap-2 hover:text-blue-500 transition-colors"
