@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils'
 import { ArrowUpRight, File, Phone, Truck } from 'lucide-react'
 import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
 import CopyText from '@/components/CopyText/CopyText.tsx'
-import { arrivalStatusStyles, tabTriggerStyles } from '@/utils/commonStyles.ts'
+import { arrivalStatusStyles, invoiceStatusStyles, tabTriggerStyles } from '@/utils/commonStyles.ts'
 import { capitalize } from '@/utils/capitalizeFirstLetter.ts'
 import LogsAccordionView from '@/components/LogsAccordionView/LogsAccordionView.tsx'
 import ServicesTable from '@/components/Tables/ServicesTable.tsx'
@@ -73,19 +73,26 @@ const ArrivalDetails = () => {
                 <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                   <CancelButton onClick={() => setConfirmCancelModalOpen(true)} />
                 </ProtectedElement>
-                <Badge
-                  className={cn(
-                    arrivalStatusStyles[arrival.arrival_status] || arrivalStatusStyles.default,
-                    'py-2 px-2.5 font-bold mb-4',
-                  )}
-                >
-                  {capitalize(arrival.arrival_status)}
-                </Badge>
+                <h3 className="text-xl font-bold flex gap-1 items-center mb-3">
+                  <Truck /> {arrival.arrivalNumber}
+                </h3>
+                <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+                  <div className="flex flex-col mb-4">
+                    <p className="text-sm font-bold text-muted-foreground mb-2">Доставка</p>
+                    {arrival.arrival_status && (
+                      <Badge
+                        className={cn(
+                          arrivalStatusStyles[arrival.arrival_status] || arrivalStatusStyles.default,
+                          'py-2 px-2.5 font-bold ',
+                        )}
+                      >
+                        {capitalize(arrival.arrival_status)}
+                      </Badge>
+                    )}
+                  </div>
+                </ProtectedElement>
 
                 <div className="space-y-5">
-                  <h3 className="text-xl font-bold flex gap-1 items-center mb-3">
-                    <Truck /> {arrival.arrivalNumber}
-                  </h3>
 
                   <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                     <div className="space-y-1">
@@ -107,8 +114,8 @@ const ArrivalDetails = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col md:items-start justify-between">
-                <div className="flex gap-2 mt-4 md:mt-0 md:mb-4 order-last md:order-none items-start">
+              <div className="flex flex-col md:items-start gap-4">
+                <div className="flex gap-2 mt-4 md:mt-0 items-start">
                   <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                     <EditButton onClick={() => setEditModalOpen(true)} />
                   </ProtectedElement>
@@ -117,41 +124,58 @@ const ArrivalDetails = () => {
                   </ProtectedElement>
                 </div>
 
-                <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
-                  <div className="space-y-1 mb-4">
-                    <p className="text-sm text-muted-foreground font-bold">Заказчик</p>
-
-                    <Link
-                      to={`/clients/${ arrival.client._id }`}
-                      className="inline-flex items-center gap-1 font-bold hover:text-blue-500 transition-colors m-0 p-0"
-                    >
-                      {arrival.client.name}
-                      <ArrowUpRight className="h-4 w-4" />
-                    </Link>
-
-                    <div className="flex gap-2 items-center">
-                      <CopyText text={arrival.client.phone_number} children={<Phone className="h-4 w-4" />} />
+                <div className="space-y-4">
+                  <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+                    <div className="flex flex-col">
+                      <p className="text-sm font-bold text-muted-foreground mb-2">Оплата</p>
+                      {arrival.paymentStatus !== undefined && (
+                        <Badge
+                          className={cn(
+                            invoiceStatusStyles[
+                              arrival.paymentStatus as 'в ожидании' | 'оплачено' | 'частично оплачено'
+                            ] || invoiceStatusStyles['в ожидании'],
+                            'py-1.5 px-3 font-bold text-center',
+                          )}
+                        >
+                          {capitalize(arrival.paymentStatus ?? 'в ожидании')}
+                        </Badge>
+                      )}
                     </div>
-                  </div>
-                </ProtectedElement>
+                  </ProtectedElement>
 
-                <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
-                  {arrival.shipping_agent && (
+                  <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
                     <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground font-bold">Контрагент</p>
-                      <Link
-                        to="/counterparties"
-                        className="inline-flex items-center gap-1 font-bold hover:text-blue-500 transition-colors  m-0 p-0"
+                      <p className="text-sm text-muted-foreground font-bold">Заказчик</p>
+                      <Link to={`/clients/${ arrival.client._id }`}
+                        className="inline-flex items-center gap-1 font-bold hover:text-blue-500 transition-colors m-0 p-0"
                       >
-                        {arrival.shipping_agent.name}
+                        {arrival.client.name}
                         <ArrowUpRight className="h-4 w-4" />
                       </Link>
                       <div className="flex gap-2 items-center">
-                        <CopyText text={arrival.shipping_agent.phone_number} children={<Phone className="h-4 w-4" />} />
+                        <CopyText text={arrival.client.phone_number} children={<Phone className="h-4 w-4" />} />
                       </div>
                     </div>
-                  )}
-                </ProtectedElement>
+                  </ProtectedElement>
+
+                  <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+                    {arrival.shipping_agent && (
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground font-bold">Контрагент</p>
+                        <Link
+                          to="/counterparties"
+                          className="inline-flex items-center gap-1 font-bold hover:text-blue-500 transition-colors  m-0 p-0"
+                        >
+                          {arrival.shipping_agent.name}
+                          <ArrowUpRight className="h-4 w-4" />
+                        </Link>
+                        <div className="flex gap-2 items-center">
+                          <CopyText text={arrival.shipping_agent.phone_number} children={<Phone className="h-4 w-4" />} />
+                        </div>
+                      </div>
+                    )}
+                  </ProtectedElement>
+                </div>
               </div>
             </div>
 
@@ -159,7 +183,7 @@ const ArrivalDetails = () => {
               <h3 className="font-bold uppercase mb-3 text-muted-foreground text-center">Дополнительно</h3>
               <Tabs value={tabs.toString()} onValueChange={val => setTabs(Number(val))}>
                 <TabsList className={`mb-5 w-full ${ heightTab } rounded-2xl`}>
-                  <div className={`inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto ${ paddingTop }`} >
+                  <div className={`inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto ${ paddingTop }`}>
                     <TabsTrigger value="0" className={cn(tabTriggerStyles, 'sm:text-sm')}>
                       Отправленные
                     </TabsTrigger>
@@ -215,7 +239,7 @@ const ArrivalDetails = () => {
                         arrival.documents.map((doc, idx) => (
                           <Link
                             key={idx}
-                            to={`${apiHost}/uploads/documents/${ basename(doc.document) }`}
+                            to={`${ apiHost }/uploads/documents/${ basename(doc.document) }`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex justify-center items-center gap-2 hover:text-blue-500 transition-colors"
