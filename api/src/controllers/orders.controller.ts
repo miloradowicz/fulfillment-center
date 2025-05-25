@@ -36,7 +36,7 @@ export class OrdersController {
     }
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/all')
   async getAllArchivedOrders() {
     return this.ordersService.getAllArchived()
@@ -50,7 +50,7 @@ export class OrdersController {
     return this.ordersService.getById(id)
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getArchivedOrder(@Param('id') id: string) {
     return this.ordersService.getArchivedById(id)

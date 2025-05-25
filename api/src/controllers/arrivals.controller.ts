@@ -36,7 +36,7 @@ export class ArrivalsController {
     }
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/all')
   async getAllArchivedArrivals(@Query('populate') populate?: string) {
     return await this.arrivalsService.getArchivedAll(populate === '1')
@@ -47,7 +47,7 @@ export class ArrivalsController {
     return this.arrivalsService.getOne(id, populate === '1')
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getOneArchivedArrival(@Param('id') id: string, @Query('populate') populate: string) {
     return this.arrivalsService.getArchivedOne(id, populate === '1')
