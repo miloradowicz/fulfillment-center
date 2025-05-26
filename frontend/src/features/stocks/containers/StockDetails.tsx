@@ -28,7 +28,6 @@ const StockDetails = () => {
     writeOffModalOpen,
     openWriteOffModal,
     closeWriteOffModal,
-    tabs,
     currentTab,
     handleTabChange,
   } = useStockDetails()
@@ -44,14 +43,16 @@ const StockDetails = () => {
         />
       </Modal>
 
-      <Modal open={writeOffModalOpen} handleClose={closeWriteOffModal}>
-        <WriteOffForm
-          initialData={(stock && { stock: stock }) ?? undefined}
-          onSuccess={() => {
-            closeWriteOffModal()
-          }}
-        />
-      </Modal>
+      <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+        <Modal open={writeOffModalOpen} handleClose={closeWriteOffModal}>
+          <WriteOffForm
+            initialData={(stock && { stock: stock }) ?? undefined}
+            onSuccess={() => {
+              closeWriteOffModal()
+            }}
+          />
+        </Modal>
+      </ProtectedElement>
 
       <ConfirmationModal
         open={archiveModalOpen}
@@ -89,7 +90,7 @@ const StockDetails = () => {
           </div>
 
           <div className="w-full sm:w-auto">
-            <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
+            <ProtectedElement allowedRoles={['super-admin', 'admin']}>
               <CustomButton text="Добавить списание" onClick={openWriteOffModal} />
             </ProtectedElement>
           </div>
@@ -99,15 +100,15 @@ const StockDetails = () => {
           <div className="flex justify-center">
             <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
               <div className='inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar'>
-                {tabs.map(tab => (
-                  <TabsTrigger
-                    key={tab.value}
-                    value={tab.value}
-                    className={tabTriggerStyles}
-                  >
-                    {tab.label}
-                  </TabsTrigger>
-                ))}
+                <TabsTrigger value="products" className={tabTriggerStyles}>Товары</TabsTrigger>
+
+                <TabsTrigger value="defects" className={tabTriggerStyles}>Брак</TabsTrigger>
+
+                <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+                  <TabsTrigger value="write-offs" className={tabTriggerStyles}>Списания</TabsTrigger>
+                </ProtectedElement>
+
+                <TabsTrigger value="logs" className={tabTriggerStyles}>История</TabsTrigger>
               </div>
             </TabsList>
           </div>
@@ -115,12 +116,17 @@ const StockDetails = () => {
           <TabsContent value="products" className="mt-0">
             <StockProductsPage />
           </TabsContent>
+
           <TabsContent value="defects">
             <StockDefectsPage />
           </TabsContent>
-          <TabsContent value="write-offs">
-            <StockWriteOffsPage />
-          </TabsContent>
+
+          <ProtectedElement allowedRoles={['super-admin', 'admin']}>
+            <TabsContent value="write-offs">
+              <StockWriteOffsPage />
+            </TabsContent>
+          </ProtectedElement>
+
           <TabsContent value="logs">
             {stock?.logs && stock.logs.length > 0 ? (
               <LogsAccordionView logs={stock.logs} />
