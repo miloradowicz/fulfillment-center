@@ -14,6 +14,15 @@ import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog'
 const AppToolbar = () => {
   const user = useAppSelector(selectUser)
   const [isOpen, setIsOpen] = useState<boolean>(false)
+  let logoRedirect = ''
+
+  if (user?.role === 'super-admin' || user?.role === 'admin') {
+    logoRedirect = '/admin'
+  } else if (user?.role === 'manager'){
+    logoRedirect = '/clients'
+  } else if (user?.role === 'stock-worker'){
+    logoRedirect = '/tasks'
+  }
 
   return (
     <header className="fixed top-0 left-0 w-full bg-primary text-primary-foreground z-50">
@@ -40,9 +49,10 @@ const AppToolbar = () => {
             </Sheet>
           )}
 
-          <NavLink to="/" className=" rounded-md">
+          <NavLink to={logoRedirect} className=" rounded-md">
             <img src="/logo.png" alt="logo" className="h-[80px] object-cover" />
           </NavLink>
+
         </div>
 
         <div className="flex items-center gap-3">
