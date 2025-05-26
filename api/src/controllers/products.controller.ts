@@ -28,7 +28,7 @@ export class ProductsController {
     }
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/all')
   async getAllArchivedProducts(@Query('populate') populate?: string) {
     return await this.productsService.getAllArchived(populate === '1')
@@ -39,7 +39,7 @@ export class ProductsController {
     return await this.productsService.getById(id, populate === '1')
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getArchivedProduct(@Param('id') id: string, @Query('populate') populate?: string) {
     return await this.productsService.getArchivedById(id, populate === '1')

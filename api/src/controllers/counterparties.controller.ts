@@ -16,7 +16,7 @@ export class CounterpartiesController {
     return this.counterpartiesService.getAll()
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/all')
   async getAllArchivedCounterparties() {
     return this.counterpartiesService.getAllArchived()
@@ -27,7 +27,7 @@ export class CounterpartiesController {
     return this.counterpartiesService.getById(id)
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getArchivedCounterparty(@Param('id') id: string) {
     return this.counterpartiesService.getArchivedById(id)

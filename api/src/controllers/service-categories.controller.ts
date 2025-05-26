@@ -16,7 +16,7 @@ export class ServiceCategoriesController {
     return this.serviceCategoryService.getAll()
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/all')
   async getAllArchivedServiceCategories() {
     return this.serviceCategoryService.getAllArchived()
@@ -27,7 +27,7 @@ export class ServiceCategoriesController {
     return this.serviceCategoryService.getById(id)
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getArchivedServiceCategoryById(@Param('id') id: string) {
     return this.serviceCategoryService.getArchivedById(id)

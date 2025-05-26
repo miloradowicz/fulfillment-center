@@ -17,11 +17,17 @@ import TaskOverview from '@/features/appUsage/components/TaskOverview.tsx'
 import StockOverview from '@/features/appUsage/components/StockOverview.tsx'
 import AdminPanelOverview from '@/features/appUsage/components/AdminPanelOverview.tsx'
 import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
+import { cn } from '@/lib/utils.ts'
+import { getOS } from '@/utils/getOs.ts'
+import { useAppSelector } from '@/app/hooks.ts'
+import { selectUser } from '@/store/slices/authSlice.ts'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
   const location = useLocation()
   const navigate = useNavigate()
+  const [os] = useState<string>(getOS())
+  const user = useAppSelector(selectUser)
 
   const tabNames = React.useMemo(() => ['general', 'clients', 'products','arrivals', 'orders', 'tasks', 'stocks', 'counterparties', 'users', 'services', 'invoices'], [])
 
@@ -41,7 +47,6 @@ const AppUsage = () =>  {
     }
   }, [location, tabNames])
 
-
   return (
     <div className="max-w-[1000px] mx-auto">
       <div className="my-7">
@@ -49,8 +54,13 @@ const AppUsage = () =>  {
       </div>
 
       <Tabs value={value} onValueChange={handleChange} className="w-full">
-        <TabsList className="mb-5 w-full h-auto">
-          <div className="inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto">
+        <TabsList className="mb-5 sm:w-auto w-full rounded-3xl">
+          <div
+            className={cn(
+              'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
+              (os === 'Linux' || os === 'Windows') && (user?.role !== 'stock-worker' && user?.role !== 'manager') ? 'hover:pt-[11px]' : '',
+            )}
+          >
             <TabsTrigger className={tabTriggerStyles} value="general">Общее</TabsTrigger>
 
             <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>

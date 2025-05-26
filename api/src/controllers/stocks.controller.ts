@@ -5,8 +5,7 @@ import { UpdateStockDto } from '../dto/update-stock.dto'
 import { Roles } from 'src/decorators/roles.decorator'
 import { RolesGuard } from 'src/guards/roles.guard'
 import { CreateWriteOffDto } from 'src/dto/create-write-off.dto'
-import { HydratedUser, RequestWithUser } from '../types'
-import { User } from 'src/decorators/user.param-decorator'
+import { RequestWithUser } from '../types'
 
 @UseGuards(RolesGuard)
 @Roles('stock-worker', 'manager', 'admin', 'super-admin')
@@ -19,7 +18,7 @@ export class StocksController {
     return await this.stocksService.getAll()
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/all')
   async getAllArchivedStocks() {
     return this.stocksService.getAllArchived()
@@ -30,7 +29,7 @@ export class StocksController {
     return this.stocksService.getOne(id)
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getArchivedStockById(@Param('id') id: string) {
     return this.stocksService.getArchivedById(id)
@@ -57,6 +56,7 @@ export class StocksController {
     return await this.stocksService.createWriteOff(id, writeOffDto, userId)
   }
 
+  @Roles('super-admin', 'admin')
   @Patch(':id/archive')
   async archiveStock(@Param('id') id: string, @Req() req: RequestWithUser) {
     const userId = req.user._id

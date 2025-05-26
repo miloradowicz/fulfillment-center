@@ -29,14 +29,9 @@ const initialState: ServiceState = {
   creationAndModificationError: null,
 }
 
-export const selectServiceCategory = (state: RootState) => state.serviceCategories.serviceCategory
-export const selectAllServiceCateogories = (state: RootState) => state.serviceCategories.serviceCategories
+export const selectAllServiceCategories = (state: RootState) => state.serviceCategories.serviceCategories
 export const selectLoadingFetchServiceCategory = (state: RootState) => state.serviceCategories.loadingFetch
 export const selectLoadingAddServiceCategory = (state: RootState) => state.serviceCategories.loadingAdd
-export const selectLoadingArchiveServiceCategory = (state: RootState) => state.serviceCategories.loadingArchive
-export const selectLoadingDeleteServiceCategory = (state: RootState) => state.serviceCategories.loadingDelete
-export const selectLoadingUpdateServiceCategory = (state: RootState) => state.serviceCategories.loadingUpdate
-export const selectServiceCategoryError = (state: RootState) => state.serviceCategories.error
 export const selectServiceCategoryCreationAndModificationError = (state: RootState) => state.serviceCategories.creationAndModificationError
 
 const serviceCategorySlice = createSlice({

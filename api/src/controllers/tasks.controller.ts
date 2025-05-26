@@ -22,7 +22,7 @@ export class TasksController {
     }
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/all')
   async getAllArchivedTasks(@Query('populate') populate?: string) {
     return await this.tasksService.getAllArchived(populate === '1')
@@ -33,7 +33,7 @@ export class TasksController {
     return this.tasksService.getById(id)
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getArchivedTaskById(@Param('id') id: string) {
     return await this.tasksService.getArchivedById(id)

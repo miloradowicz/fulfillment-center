@@ -23,11 +23,23 @@ import CancelButton from '@/components/Buttons/CancelButton.tsx'
 import LogsAccordionView from '@/components/LogsAccordionView/LogsAccordionView.tsx'
 import { apiHost } from '@/constants.ts'
 
-
 const OrderDetails = () => {
-  const { order, loading, open, openArchiveModal, handleArchive, setOpen, setOpenArchiveModal, tabs, setTabs, confirmCancelModalOpen, handleCancel, setConfirmCancelModalOpen, paddingTop, heightTab } =
-    useOrderDetails()
-
+  const {
+    order,
+    loading,
+    open,
+    openArchiveModal,
+    handleArchive,
+    setOpen,
+    setOpenArchiveModal,
+    tabs,
+    setTabs,
+    confirmCancelModalOpen,
+    handleCancel,
+    setConfirmCancelModalOpen,
+    os,
+    currentUser,
+  } = useOrderDetails()
 
   return (
     <>
@@ -117,9 +129,8 @@ const OrderDetails = () => {
                     {order.paymentStatus !== undefined && (
                       <Badge
                         className={cn(
-                          invoiceStatusStyles[
-                            order.paymentStatus as 'в ожидании' | 'оплачено' | 'частично оплачено'
-                          ] || invoiceStatusStyles['в ожидании'],
+                          invoiceStatusStyles[order.paymentStatus as 'в ожидании' | 'оплачено' | 'частично оплачено'] ||
+                            invoiceStatusStyles['в ожидании'],
                           'py-1.5 px-3 font-bold text-center',
                         )}
                       >
@@ -164,8 +175,13 @@ const OrderDetails = () => {
             <div className="rounded-2xl shadow p-6 mb-6">
               <h3 className="font-bold uppercase mb-3 text-muted-foreground">Дополнительно</h3>
               <Tabs value={tabs.toString()} onValueChange={val => setTabs(Number(val))}>
-                <TabsList className={`mb-5 w-full ${ heightTab } rounded-2xl`}>
-                  <div className={`inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto ${ paddingTop }`} >
+                <TabsList className='mb-5 sm:w-auto w-full rounded-3xl'>
+                  <div
+                    className={cn(
+                      'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
+                      (os === 'Linux' || os === 'Windows') &&  currentUser?.role !== 'stock-worker' ? 'hover:pt-[10px]' : '',
+                    )}
+                  >
                     <TabsTrigger value="0" className={cn(tabTriggerStyles, 'sm:text-sm')}>
                       Товары
                     </TabsTrigger>
@@ -208,7 +224,7 @@ const OrderDetails = () => {
                         order.documents.map((doc, idx) => (
                           <Link
                             key={idx}
-                            to={`${apiHost}/uploads/documents/${ basename(doc.document) }`}
+                            to={`${ apiHost }/uploads/documents/${ basename(doc.document) }`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex justify-center items-center gap-2 hover:text-blue-500 transition-colors"

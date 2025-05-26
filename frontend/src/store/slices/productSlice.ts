@@ -52,21 +52,15 @@ const initialState: ProductState = {
   deleteError: null,
 }
 
-export const selectProduct = (state: RootState) => state.products.product
-export const selectArchivedProduct = (state: RootState) => state.products.archivedProduct
 export const selectAllProducts = (state: RootState) => state.products.products
 export const selectAllArchivedProducts = (state: RootState) => state.products.archivedProducts
 export const selectProductWithPopulate = (state: RootState) => state.products.productWithPopulate
 export const selectProductsWithPopulate = (state: RootState) => state.products.productsWithPopulate
 export const selectLoadingFetchProduct = (state: RootState) => state.products.loadingFetch
-export const selectLoadingFetchArchivedProduct = (state: RootState) => state.products.loadingFetch
 export const selectLoadingAddProduct = (state: RootState) => state.products.loadingAdd
-export const selectLoadingArchiveProduct = (state: RootState) => state.products.loadingArchive
-export const selectLoadingDeleteProduct = (state: RootState) => state.products.loadingDelete
 export const selectLoadingUpdateProduct = (state: RootState) => state.products.loadingUpdate
 export const selectProductError = (state: RootState) => state.products.error
 export const selectCreateProductError = (state: RootState) => state.products.createAndUpdateError
-export const selectDeleteProductError = (state: RootState) => state.products.deleteError
 export const selectLoadingFetchAllArchivedProduct = (state: RootState) => state.products.loadingFetchArchive
 
 const productSlice = createSlice({

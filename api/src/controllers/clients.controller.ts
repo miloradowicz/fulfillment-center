@@ -16,7 +16,7 @@ export class ClientsController {
     return this.clientsService.getAll()
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/all')
   async getAllArchivedClients() {
     return this.clientsService.getAllArchived()
@@ -27,7 +27,7 @@ export class ClientsController {
     return this.clientsService.getById(id)
   }
 
-  @Roles('super-admin')
+  @Roles('super-admin', 'admin')
   @Get('archived/:id')
   async getArchivedClient(@Param('id') id: string) {
     return this.clientsService.getArchivedById(id)
