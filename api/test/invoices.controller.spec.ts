@@ -16,6 +16,7 @@ import { RolesGuard } from '../src/guards/roles.guard'
 import { TokenAuthService } from '../src/services/token-auth.service'
 import { RolesService } from '../src/services/roles.service'
 import { ForbiddenException, NotFoundException } from '@nestjs/common'
+import { RequestWithUser } from 'src/types'
 
 // Мокаем RolesGuard, чтобы он пропускал все запросы
 jest.mock('../src/guards/roles.guard', () => ({
@@ -44,6 +45,16 @@ describe('InvoicesController', () => {
     status: 'в ожидании',
     isArchived: false,
   }
+
+  const mockUserId = 'user-id'
+
+  const mockUser = {
+    _id: mockUserId
+  }
+
+  const mockRequest = {
+    user: mockUser
+  } as RequestWithUser
 
   const mockInvoicesService = {
     getAll: jest.fn(),
@@ -192,9 +203,9 @@ describe('InvoicesController', () => {
 
       mockInvoicesService.create.mockResolvedValue(mockInvoice)
 
-      const result = await controller.createInvoice(createInvoiceDto)
+      const result = await controller.createInvoice(createInvoiceDto, mockRequest)
 
-      expect(service.create).toHaveBeenCalledWith(createInvoiceDto)
+      expect(service.create).toHaveBeenCalledWith(createInvoiceDto, mockUserId)
       expect(result).toEqual(mockInvoice)
     })
   })
@@ -213,9 +224,9 @@ describe('InvoicesController', () => {
 
       mockInvoicesService.update.mockResolvedValue(updatedInvoice)
 
-      const result = await controller.updateInvoice('invoice-id', updateInvoiceDto)
+      const result = await controller.updateInvoice('invoice-id', updateInvoiceDto, mockRequest)
 
-      expect(service.update).toHaveBeenCalledWith('invoice-id', updateInvoiceDto)
+      expect(service.update).toHaveBeenCalledWith('invoice-id', updateInvoiceDto, mockUserId)
       expect(result).toEqual(updatedInvoice)
     })
 
@@ -226,7 +237,7 @@ describe('InvoicesController', () => {
 
       mockInvoicesService.update.mockRejectedValue(new NotFoundException('Счёт не найден.'))
 
-      await expect(controller.updateInvoice('nonexistent-id', updateInvoiceDto)).rejects.toThrow(NotFoundException)
+      await expect(controller.updateInvoice('nonexistent-id', updateInvoiceDto, mockRequest)).rejects.toThrow(NotFoundException)
     })
   })
 
@@ -235,22 +246,22 @@ describe('InvoicesController', () => {
       const archiveResult = { message: 'Счёт перемещён в архив.' }
       mockInvoicesService.archive.mockResolvedValue(archiveResult)
 
-      const result = await controller.archiveInvoice('invoice-id')
+      const result = await controller.archiveInvoice('invoice-id', mockRequest)
 
-      expect(service.archive).toHaveBeenCalledWith('invoice-id')
+      expect(service.archive).toHaveBeenCalledWith('invoice-id', mockUserId)
       expect(result).toEqual(archiveResult)
     })
 
     it('should throw NotFoundException when invoice not found', async () => {
       mockInvoicesService.archive.mockRejectedValue(new NotFoundException('Счёт не найден.'))
 
-      await expect(controller.archiveInvoice('nonexistent-id')).rejects.toThrow(NotFoundException)
+      await expect(controller.archiveInvoice('nonexistent-id', mockRequest)).rejects.toThrow(NotFoundException)
     })
 
     it('should throw ForbiddenException when invoice already archived', async () => {
       mockInvoicesService.archive.mockRejectedValue(new ForbiddenException('Счёт уже в архиве.'))
 
-      await expect(controller.archiveInvoice('already-archived-id')).rejects.toThrow(ForbiddenException)
+      await expect(controller.archiveInvoice('already-archived-id', mockRequest)).rejects.toThrow(ForbiddenException)
     })
   })
 

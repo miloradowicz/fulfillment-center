@@ -47,6 +47,8 @@ describe('TasksService', () => {
     save: jest.fn().mockResolvedValue(this),
   }
 
+  const mockUserId = new mongoose.Types.ObjectId()
+
   const mockArchivedTask = {
     ...mockTask,
     isArchived: true,
@@ -278,9 +280,9 @@ describe('TasksService', () => {
       jest.spyOn(taskModel, 'create').mockResolvedValue(mockCreatedTask as any)
       jest.spyOn(counterService, 'getNextSequence').mockResolvedValue(1)
 
-      const result = await service.create(createTaskDto)
+      const result = await service.create(createTaskDto, mockUserId)
 
-      expect(taskModel.create).toHaveBeenCalledWith(createTaskDto)
+      expect(taskModel.create).toHaveBeenCalledWith(createTaskDto, mockUserId)
       expect(counterService.getNextSequence).toHaveBeenCalledWith('task')
       expect(result).toEqual({ ...mockTask, taskNumber: 'TSK-1' })
     })
@@ -292,7 +294,7 @@ describe('TasksService', () => {
         throw new Error('Test error')
       })
 
-      await expect(service.create(createTaskDto)).rejects.toThrow(BadRequestException)
+      await expect(service.create(createTaskDto, mockUserId)).rejects.toThrow(BadRequestException)
     })
   })
 
@@ -315,9 +317,9 @@ describe('TasksService', () => {
 
       jest.spyOn(taskModel, 'findById').mockResolvedValue(mockTaskToUpdate as any)
 
-      const result = await service.update(mockTask._id, updateTaskDto)
+      const result = await service.update(mockTask._id, updateTaskDto, mockUserId)
 
-      expect(taskModel.findById).toHaveBeenCalledWith(mockTask._id)
+      expect(taskModel.findById).toHaveBeenCalledWith(mockTask._id, mockUserId)
       expect(mockTaskToUpdate.set).toHaveBeenCalledWith(updateTaskDto)
       expect(result).toEqual({
         ...mockTask,
@@ -329,7 +331,7 @@ describe('TasksService', () => {
     it('should throw NotFoundException if task not found', async () => {
       jest.spyOn(taskModel, 'findById').mockResolvedValue(null)
 
-      await expect(service.update('nonexistent-id', {})).rejects.toThrow(NotFoundException)
+      await expect(service.update('nonexistent-id', {}, mockUserId)).rejects.toThrow(NotFoundException)
     })
 
     it('should update task with order association when type is заказ', async () => {
@@ -352,9 +354,9 @@ describe('TasksService', () => {
 
       jest.spyOn(taskModel, 'findById').mockResolvedValue(mockTaskToUpdate as any)
 
-      const result = await service.update(mockTask._id, updateTaskDto)
+      const result = await service.update(mockTask._id, updateTaskDto, mockUserId)
 
-      expect(mockTaskToUpdate.set).toHaveBeenCalledWith(updateTaskDto)
+      expect(mockTaskToUpdate.set).toHaveBeenCalledWith(updateTaskDto, mockUserId)
       expect(mockTaskToUpdate.set).toHaveBeenCalledWith('associated_arrival', null)
       expect(mockTaskToUpdate.set).toHaveBeenCalledWith('associated_order', orderId)
     })
@@ -379,9 +381,9 @@ describe('TasksService', () => {
 
       jest.spyOn(taskModel, 'findById').mockResolvedValue(mockTaskToUpdate as any)
 
-      const result = await service.update(mockTask._id, updateTaskDto)
+      const result = await service.update(mockTask._id, updateTaskDto, mockUserId)
 
-      expect(mockTaskToUpdate.set).toHaveBeenCalledWith(updateTaskDto)
+      expect(mockTaskToUpdate.set).toHaveBeenCalledWith(updateTaskDto, mockUserId)
       expect(mockTaskToUpdate.set).toHaveBeenCalledWith('associated_order', null)
       expect(mockTaskToUpdate.set).toHaveBeenCalledWith('associated_arrival', arrivalId)
     })
@@ -404,9 +406,9 @@ describe('TasksService', () => {
 
       jest.spyOn(taskModel, 'findById').mockResolvedValue(mockTaskToUpdate as any)
 
-      const result = await service.update(mockTask._id, updateTaskDto)
+      const result = await service.update(mockTask._id, updateTaskDto, mockUserId)
 
-      expect(mockTaskToUpdate.set).toHaveBeenCalledWith(updateTaskDto)
+      expect(mockTaskToUpdate.set).toHaveBeenCalledWith(updateTaskDto, mockUserId)
       expect(mockTaskToUpdate.set).toHaveBeenCalledWith('associated_order', null)
       expect(mockTaskToUpdate.set).toHaveBeenCalledWith('associated_arrival', null)
     })
@@ -429,9 +431,9 @@ describe('TasksService', () => {
 
       jest.spyOn(taskModel, 'findById').mockResolvedValue(mockTaskToUpdate as any)
 
-      const result = await service.updateStatus(mockTask._id, updateTaskStatusDto)
+      const result = await service.updateStatus(mockTask._id, updateTaskStatusDto, mockUserId)
 
-      expect(taskModel.findById).toHaveBeenCalledWith(mockTask._id)
+      expect(taskModel.findById).toHaveBeenCalledWith(mockTask._id, mockUserId)
       expect(mockTaskToUpdate.set).toHaveBeenCalledWith(updateTaskStatusDto)
       expect(result).toEqual({
         ...mockTask,
@@ -442,13 +444,13 @@ describe('TasksService', () => {
     it('should throw NotFoundException if task not found', async () => {
       jest.spyOn(taskModel, 'findById').mockResolvedValue(null)
 
-      await expect(service.updateStatus('nonexistent-id', { status: 'готово' })).rejects.toThrow(NotFoundException)
+      await expect(service.updateStatus('nonexistent-id', { status: 'готово' }, mockUserId)).rejects.toThrow(NotFoundException)
     })
   })
 
   describe('archive', () => {
     it('should archive a task', async () => {
-      const result = await service.archive(mockTask._id)
+      const result = await service.archive(mockTask._id, mockUserId)
 
       expect(taskModel.findByIdAndUpdate).toHaveBeenCalledWith(mockTask._id, { isArchived: true })
       expect(result).toEqual({ message: 'Задача перемещена в архив' })
@@ -457,13 +459,13 @@ describe('TasksService', () => {
     it('should throw NotFoundException if task not found', async () => {
       jest.spyOn(taskModel, 'findByIdAndUpdate').mockResolvedValue(null)
 
-      await expect(service.archive('nonexistent-id')).rejects.toThrow(NotFoundException)
+      await expect(service.archive('nonexistent-id', mockUserId)).rejects.toThrow(NotFoundException)
     })
 
     it('should throw ForbiddenException if task already archived', async () => {
       jest.spyOn(taskModel, 'findByIdAndUpdate').mockResolvedValue(mockArchivedTask)
 
-      await expect(service.archive(mockArchivedTask._id)).rejects.toThrow(ForbiddenException)
+      await expect(service.archive(mockArchivedTask._id, mockUserId)).rejects.toThrow(ForbiddenException)
     })
   })
 
@@ -477,7 +479,7 @@ describe('TasksService', () => {
         }),
       } as any)
 
-      const result = await service.unarchive(mockArchivedTask._id)
+      const result = await service.unarchive(mockArchivedTask._id, mockUserId)
 
       expect(taskModel.findById).toHaveBeenCalledWith(mockArchivedTask._id)
       expect(result).toEqual({ message: 'Задача восстановлен из архива' })
@@ -486,13 +488,13 @@ describe('TasksService', () => {
     it('should throw NotFoundException if task not found', async () => {
       jest.spyOn(taskModel, 'findById').mockResolvedValue(null)
 
-      await expect(service.unarchive('nonexistent-id')).rejects.toThrow(NotFoundException)
+      await expect(service.unarchive('nonexistent-id', mockUserId)).rejects.toThrow(NotFoundException)
     })
 
     it('should throw ForbiddenException if task is not archived', async () => {
       jest.spyOn(taskModel, 'findById').mockResolvedValue(mockTask)
 
-      await expect(service.unarchive(mockTask._id)).rejects.toThrow(ForbiddenException)
+      await expect(service.unarchive(mockTask._id, mockUserId)).rejects.toThrow(ForbiddenException)
     })
   })
 

@@ -3,7 +3,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { getModelToken } from '@nestjs/mongoose'
 import { ForbiddenException, NotFoundException } from '@nestjs/common'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { InvoicesService } from '../src/services/invoices.service'
 import { Invoice, InvoiceDocument } from '../src/schemas/invoice.schema'
 import { Service, ServiceDocument } from '../src/schemas/service.schema'
@@ -36,6 +36,8 @@ describe('InvoicesService', () => {
     populate: jest.fn().mockReturnThis(),
     sort: jest.fn().mockReturnThis(),
   }
+
+  const mockUserId = new Types.ObjectId()
 
   const mockArchivedInvoice = {
     ...mockInvoice,
@@ -238,7 +240,7 @@ describe('InvoicesService', () => {
     it('should throw NotFoundException if invoice not found', async () => {
       jest.spyOn(mockInvoiceModel, 'findById').mockResolvedValue(null)
 
-      await expect(service.update('non-existent-id', {})).rejects.toThrow(NotFoundException)
+      await expect(service.update('non-existent-id', {}, mockUserId)).rejects.toThrow(NotFoundException)
     })
   })
 
@@ -251,7 +253,7 @@ describe('InvoicesService', () => {
         save: saveSpy,
       } as any)
 
-      const result = await service.archive('invoice-id-1')
+      const result = await service.archive('invoice-id-1', mockUserId)
       expect(result).toEqual({ message: 'Счёт перемещён в архив.' })
       expect(saveSpy).toHaveBeenCalled()
     })
@@ -259,13 +261,13 @@ describe('InvoicesService', () => {
     it('should throw NotFoundException if invoice not found', async () => {
       jest.spyOn(mockInvoiceModel, 'findById').mockResolvedValue(null)
 
-      await expect(service.archive('non-existent-id')).rejects.toThrow(NotFoundException)
+      await expect(service.archive('non-existent-id', mockUserId)).rejects.toThrow(NotFoundException)
     })
 
     it('should throw ForbiddenException if invoice is already archived', async () => {
       jest.spyOn(mockInvoiceModel, 'findById').mockResolvedValue(mockArchivedInvoice as any)
 
-      await expect(service.archive('invoice-id-2')).rejects.toThrow(ForbiddenException)
+      await expect(service.archive('invoice-id-2', mockUserId)).rejects.toThrow(ForbiddenException)
     })
   })
 

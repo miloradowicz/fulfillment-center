@@ -10,6 +10,9 @@ import { StocksService } from '../src/services/stocks.service'
 import { FilesService } from '../src/services/files.service'
 import { CounterService } from '../src/services/counter.service'
 import { StockManipulationService } from '../src/services/stock-manipulation.service'
+import { model, Types } from 'mongoose'
+import { LogsService } from 'src/services/logs.service'
+import { Invoice } from 'src/schemas/invoice.schema'
 
 // Удаляем моки модулей, так как они вызывают проблемы с типами
 // Лучше использовать моки напрямую в тестах
@@ -17,6 +20,7 @@ import { StockManipulationService } from '../src/services/stock-manipulation.ser
 describe('OrdersService', () => {
   let service: OrdersService
   let orderModel: any
+  let invoiceModel: any
   let taskModel: any
   let productsService: any
   let stocksService: any
@@ -39,11 +43,23 @@ describe('OrdersService', () => {
     sent_at: new Date(),
     status: 'в сборке',
     isArchived: false,
+    paymentStatus: null,
+    logs: [],
     documents: [],
     save: jest.fn().mockResolvedValue(this),
     populate: jest.fn().mockReturnThis(),
     execPopulate: jest.fn().mockResolvedValue(this),
-    set: jest.fn().mockReturnThis()
+    set: jest.fn().mockReturnThis(),
+    deleteOne: jest.fn(),
+    lean: jest.fn().mockResolvedValue(this),
+  }
+
+  const mockUserId = new Types.ObjectId()
+
+  const mockLog = {
+    user: mockUserId,
+    change: 'mock-change',
+    date: 'mock-date',
   }
 
   beforeEach(async () => {
@@ -54,7 +70,9 @@ describe('OrdersService', () => {
         save: jest.fn().mockResolvedValue({ ...mockOrder, ...dto }),
         populate: jest.fn().mockReturnThis(),
         execPopulate: jest.fn().mockResolvedValue(this),
-        set: jest.fn().mockReturnThis()
+        set: jest.fn().mockReturnThis(),
+        deleteOne: jest.fn(),
+        lean: jest.fn().mockResolvedValue(this),
       };
     });
 
@@ -64,7 +82,7 @@ describe('OrdersService', () => {
       findOne: jest.fn(),
       findByIdAndUpdate: jest.fn(),
       findOneAndUpdate: jest.fn(),
-      findByIdAndDelete: jest.fn()
+      findByIdAndDelete: jest.fn(),
     });
 
     const module: TestingModule = await Test.createTestingModule({
@@ -82,7 +100,15 @@ describe('OrdersService', () => {
             findOne: jest.fn(),
             findByIdAndUpdate: jest.fn(),
             findOneAndUpdate: jest.fn(),
-            findByIdAndDelete: jest.fn()
+            findByIdAndDelete: jest.fn(),
+          }
+        },
+        {
+          provide: getModelToken(Invoice.name),
+          useValue: {
+            findOne: jest.fn().mockReturnThis(),
+            exists: jest.fn(),
+            lean: jest.fn().mockReturnThis(),
           }
         },
         {
@@ -120,12 +146,22 @@ describe('OrdersService', () => {
             increaseDefectStock: jest.fn().mockResolvedValue(true),
             decreaseDefectStock: jest.fn().mockResolvedValue(true)
           }
+        },
+        {
+          provide: LogsService,
+          useValue: {
+            generateLogsForCreate: jest.fn(),
+            generateLogForUpdate: jest.fn(),
+            generateLogForArchive: jest.fn(),
+            trackChanges: jest.fn(),
+          }
         }
       ]
     }).compile()
 
     service = module.get<OrdersService>(OrdersService)
     orderModel = module.get(getModelToken(Order.name))
+    invoiceModel = module.get(getModelToken(Invoice.name))
     taskModel = module.get(getModelToken(Task.name))
     productsService = module.get<ProductsService>(ProductsService)
     stocksService = module.get<StocksService>(StocksService)
@@ -233,7 +269,13 @@ describe('OrdersService', () => {
 
       orderModel.findById.mockReturnValue({
         populate: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue(populatedOrder)
+        lean: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue(populatedOrder),
+      })
+
+      invoiceModel.findOne.mockReturnValue({
+        lean: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue({})
       })
 
       const result = await service.getByIdWithPopulate('order-id')
@@ -245,7 +287,8 @@ describe('OrdersService', () => {
     it('should throw an error if order is not found', async () => {
       orderModel.findById.mockReturnValue({
         populate: jest.fn().mockReturnThis(),
-        exec: jest.fn().mockResolvedValue(null)
+        lean: jest.fn().mockReturnThis(),
+        exec: jest.fn().mockResolvedValue(null),
       })
 
       await expect(service.getByIdWithPopulate('non-existent-id')).rejects.toThrow('Заказ не найден')
@@ -287,18 +330,26 @@ describe('OrdersService', () => {
 
   describe('archive', () => {
     it('should archive an order', async () => {
-      orderModel.findByIdAndUpdate.mockResolvedValue({ ...mockOrder, isArchived: false })
+      const order = {
+        ...mockOrder,
+        isArchived: false,
+        status: 'доставлен',
+      }
 
-      const result = await service.archive('order-id')
+      orderModel.findById.mockResolvedValue(order)
+      order.save.mockResolvedValue({ ...order, isArchived: true })
 
-      expect(orderModel.findByIdAndUpdate).toHaveBeenCalledWith('order-id', { isArchived: true })
+      const result = await service.archive('order-id', mockUserId)
+
+      expect(orderModel.findById).toHaveBeenCalledWith('order-id')
+      expect(order.save).toHaveBeenCalled()
       expect(result).toEqual({ message: 'Заказ перемещен в архив' })
     })
 
     it('should throw error if order already archived', async () => {
-      orderModel.findByIdAndUpdate.mockResolvedValue({ ...mockOrder, isArchived: true })
+      orderModel.findById.mockResolvedValue({ ...mockOrder, isArchived: true })
 
-      await expect(service.archive('order-id')).rejects.toThrow('Заказ уже в архиве')
+      await expect(service.archive('order-id', mockUserId)).rejects.toThrow('Заказ уже в архиве')
     })
   })
 
@@ -310,7 +361,7 @@ describe('OrdersService', () => {
         save: jest.fn().mockResolvedValue(true)
       })
 
-      const result = await service.unarchive('order-id')
+      const result = await service.unarchive('order-id', mockUserId)
 
       expect(orderModel.findById).toHaveBeenCalledWith('order-id')
       expect(result).toEqual({ message: 'Заказ восстановлен из архива' })
@@ -322,7 +373,7 @@ describe('OrdersService', () => {
         isArchived: false
       })
 
-      await expect(service.unarchive('order-id')).rejects.toThrow('Заказ не находится в архиве')
+      await expect(service.unarchive('order-id', mockUserId)).rejects.toThrow('Заказ не находится в архиве')
     })
   })
 
@@ -330,20 +381,21 @@ describe('OrdersService', () => {
     it('should delete an order and related files', async () => {
       const orderWithDocuments = {
         ...mockOrder,
+        status: 'доставлен',
         documents: [
           { document: 'uploads/documents/test.pdf' },
           { document: 'uploads/documents/test2.pdf' }
         ]
       }
 
-      orderModel.findByIdAndDelete.mockResolvedValue(orderWithDocuments)
+      orderModel.findById.mockResolvedValue(orderWithDocuments)
+      invoiceModel.exists.mockReturnValue(false)
 
       const result = await service.delete('order-id')
 
-      expect(orderModel.findByIdAndDelete).toHaveBeenCalledWith('order-id')
-      expect(stockManipulationService.init).toHaveBeenCalled()
-      expect(stockManipulationService.saveStock).toHaveBeenCalledWith(orderWithDocuments.stock)
-      expect(result).toEqual({ message: 'Заказ успешно удалён' })
+      expect(orderModel.findById).toHaveBeenCalledWith('order-id')
+      expect(orderWithDocuments.deleteOne).toHaveBeenCalled()
+      expect(result).toEqual({ message: 'Заказ удалён' })
     })
   })
 })
