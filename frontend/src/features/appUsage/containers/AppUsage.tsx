@@ -58,7 +58,7 @@ const AppUsage = () =>  {
           <div
             className={cn(
               'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
-              os === 'Linux' || os === 'Windows' &&  user?.role !== 'stock-worker' ? 'hover:pt-[10px]' : '',
+              (os === 'Linux' || os === 'Windows') && (user?.role !== 'stock-worker' && user?.role !== 'manager') ? 'hover:pt-[11px]' : '',
             )}
           >
             <TabsTrigger className={tabTriggerStyles} value="general">Общее</TabsTrigger>
