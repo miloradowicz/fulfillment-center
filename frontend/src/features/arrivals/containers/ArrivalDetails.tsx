@@ -38,6 +38,7 @@ const ArrivalDetails = () => {
     handleCancel,
     setConfirmCancelModalOpen,
     os,
+    user,
   } = useArrivalDetails()
 
   return (
@@ -75,21 +76,19 @@ const ArrivalDetails = () => {
                 <h3 className="text-xl font-bold flex gap-1 items-center mb-3">
                   <Truck /> {arrival.arrivalNumber}
                 </h3>
-                <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
-                  <div className="flex flex-col mb-4">
-                    <p className="text-sm font-bold text-muted-foreground mb-2">Доставка</p>
-                    {arrival.arrival_status && (
-                      <Badge
-                        className={cn(
-                          arrivalStatusStyles[arrival.arrival_status] || arrivalStatusStyles.default,
-                          'py-2 px-2.5 font-bold ',
-                        )}
-                      >
-                        {capitalize(arrival.arrival_status)}
-                      </Badge>
-                    )}
-                  </div>
-                </ProtectedElement>
+                <div className="flex flex-col mb-4">
+                  <p className="text-sm font-bold text-muted-foreground mb-2">Доставка</p>
+                  {arrival.arrival_status && (
+                    <Badge
+                      className={cn(
+                        arrivalStatusStyles[arrival.arrival_status] || arrivalStatusStyles.default,
+                        'py-2 px-2.5 font-bold ',
+                      )}
+                    >
+                      {capitalize(arrival.arrival_status)}
+                    </Badge>
+                  )}
+                </div>
 
                 <div className="space-y-5">
                   <ProtectedElement allowedRoles={['super-admin', 'admin', 'manager']}>
@@ -188,7 +187,7 @@ const ArrivalDetails = () => {
                   <div
                     className={cn(
                       'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
-                      os === 'Linux' ? 'hover:pt-[10px]' : '',
+                      os === 'Linux' || os === 'Windows' &&  user?.role !== 'stock-worker' ? 'hover:pt-[10px]' : '',
                     )}
                   >
                     <TabsTrigger value="0" className={cn(tabTriggerStyles, 'sm:text-sm')}>

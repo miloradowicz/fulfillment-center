@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '@/app/hooks.ts'
+import { useAppDispatch, useAppSelector } from '@/app/hooks.ts'
 import ArchivedClients from '../components/ArchivedClients.tsx'
 import ArchivedArrivals from '../components/ArchivedArrivals.tsx'
 import ArchivedProducts from '../components/ArchivedProducts.tsx'
@@ -28,12 +28,14 @@ import { fetchArchivedInvoices } from '@/store/thunks/invoiceThunk.ts'
 import { fetchAllArchivedCounterparties } from '@/store/thunks/counterpartyThunk.ts'
 import { cn } from '@/lib/utils.ts'
 import { getOS } from '@/utils/getOs.ts'
+import { selectUser } from '@/store/slices/authSlice.ts'
 
 const ArchivePage = () =>  {
   const [value, setValue] = useState('clients')
   const location = useLocation()
   const navigate = useNavigate()
   const [os] = useState<string>(getOS())
+  const user = useAppSelector(selectUser)
 
   const tabNames = React.useMemo(() => ['clients', 'products','arrivals', 'orders', 'tasks', 'stocks', 'counterparties', 'users', 'services', 'invoices'], [])
 
@@ -103,7 +105,7 @@ const ArchivePage = () =>  {
           <div
             className={cn(
               'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
-              os === 'Linux' ? 'hover:pt-[10px]' : '',
+              os === 'Linux' || os === 'Windows' &&  user?.role !== 'stock-worker' ? 'hover:pt-[10px]' : '',
             )}
           >
             <TabsTrigger className={tabTriggerStyles} value="clients">Клиенты</TabsTrigger>

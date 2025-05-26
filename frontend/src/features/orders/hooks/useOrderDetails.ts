@@ -85,5 +85,6 @@ export const useOrderDetails = () => {
     setConfirmCancelModalOpen,
     confirmCancelModalOpen,
     os,
+    currentUser,
   }
 }

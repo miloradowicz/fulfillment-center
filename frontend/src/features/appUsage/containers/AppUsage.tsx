@@ -19,12 +19,15 @@ import AdminPanelOverview from '@/features/appUsage/components/AdminPanelOvervie
 import ProtectedElement from '@/components/ProtectedElement/ProtectedElement.tsx'
 import { cn } from '@/lib/utils.ts'
 import { getOS } from '@/utils/getOs.ts'
+import { useAppSelector } from '@/app/hooks.ts'
+import { selectUser } from '@/store/slices/authSlice.ts'
 
 const AppUsage = () =>  {
   const [value, setValue] = useState('general')
   const location = useLocation()
   const navigate = useNavigate()
   const [os] = useState<string>(getOS())
+  const user = useAppSelector(selectUser)
 
   const tabNames = React.useMemo(() => ['general', 'clients', 'products','arrivals', 'orders', 'tasks', 'stocks', 'counterparties', 'users', 'services', 'invoices'], [])
 
@@ -44,7 +47,6 @@ const AppUsage = () =>  {
     }
   }, [location, tabNames])
 
-
   return (
     <div className="max-w-[1000px] mx-auto">
       <div className="my-7">
@@ -56,7 +58,7 @@ const AppUsage = () =>  {
           <div
             className={cn(
               'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
-              os === 'Linux' ? 'hover:pt-[10px]' : '',
+              os === 'Linux' || os === 'Windows' &&  user?.role !== 'stock-worker' ? 'hover:pt-[10px]' : '',
             )}
           >
             <TabsTrigger className={tabTriggerStyles} value="general">Общее</TabsTrigger>

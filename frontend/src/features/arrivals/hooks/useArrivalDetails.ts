@@ -16,6 +16,7 @@ const useArrivalDetails = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectUser)
+  const user = useAppSelector(selectUser)
 
   const arrival = useAppSelector(selectArrivalWithPopulate)
   const loading = useAppSelector(selectLoadingFetchArrival)
@@ -95,6 +96,7 @@ const useArrivalDetails = () => {
     confirmCancelModalOpen,
     setConfirmCancelModalOpen,
     os,
+    user,
   }
 }
 
