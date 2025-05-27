@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Mock тесты для useClientForm
  *
