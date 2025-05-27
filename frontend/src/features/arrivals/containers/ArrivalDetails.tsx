@@ -187,7 +187,7 @@ const ArrivalDetails = () => {
                   <div
                     className={cn(
                       'inline-flex flex-nowrap px-2 space-x-2 sm:space-x-4 overflow-x-auto hide-scrollbar',
-                      os === 'Linux' || os === 'Windows' &&  user?.role !== 'stock-worker' ? 'hover:pt-[10px]' : '',
+                      (os === 'Linux' || os === 'Windows') &&  user?.role !== 'stock-worker' ? 'hover:pt-[10px]' : '',
                     )}
                   >
                     <TabsTrigger value="0" className={cn(tabTriggerStyles, 'sm:text-sm')}>

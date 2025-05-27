@@ -20,13 +20,6 @@ export const useStockDetails = () => {
   const [writeOffModalOpen, setWriteOffModalOpen] = useState(false)
   const [currentTab, setCurrentTab] = useState('products')
 
-  const tabs = [
-    { value: 'products', label: 'Товары' },
-    { value: 'defects', label: 'Брак' },
-    { value: 'write-offs', label: 'Списания' },
-    { value: 'logs', label: 'История' },
-  ]
-
   const stockColumns = [
     { field: 'client', headerName: 'Клиент', flex: 1 },
     { field: 'title', headerName: 'Наименование', flex: 1 },
@@ -104,7 +97,6 @@ export const useStockDetails = () => {
     writeOffModalOpen,
     openWriteOffModal,
     closeWriteOffModal,
-    tabs,
     currentTab,
     handleTabChange,
   }

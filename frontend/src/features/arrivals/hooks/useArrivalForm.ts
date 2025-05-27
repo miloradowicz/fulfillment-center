@@ -62,6 +62,7 @@ export const useArrivalForm = (initialData?: ArrivalData, onSuccess?: () => void
         documents: [],
         services: [],
         comment: initialData.comment || '',
+        paymentStatus: initialData.paymentStatus || '',
       }
       : { ...initialState },
   )

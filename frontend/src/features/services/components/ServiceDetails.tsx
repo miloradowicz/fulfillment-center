@@ -31,7 +31,7 @@ const ServiceDetails: React.FC<Props> = ({ serviceId }) => {
       {loading && <Loader />}
 
       {service ? (
-        <div className="max-w-[1000px] flex flex-col mx-auto px-3 py-2 bg-white rounded-2xl space-y-6">
+        <div className="max-w-[1000px] w-full flex flex-col mx-auto px-3 py-2 bg-white rounded-2xl space-y-6">
           <div className="flex flex-wrap">
             <Badge className="text-sm font-medium bg-green-100 text-green-800">{service.type}</Badge>
           </div>
