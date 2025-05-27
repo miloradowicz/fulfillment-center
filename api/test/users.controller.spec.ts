@@ -120,7 +120,7 @@ describe('UsersController', () => {
           httpOnly: true,
           maxAge: 2592000000,
           sameSite: 'strict',
-          secure: false
+          secure: true
         }),
       )
       expect(result).toEqual({
