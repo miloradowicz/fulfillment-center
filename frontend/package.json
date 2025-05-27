@@ -9,7 +9,11 @@
     "format": "prettier . --write",
     "lint": "eslint . --fix",
     "preview": "vite preview",
-    "test": "jest"
+    "test": "jest",
+    "test:cov": "jest --coverage",
+    "test:cov:silent": "jest --coverage --silent",
+    "test:cov:report": "jest --coverage --silent && node scripts/coverage-summary.js",
+    "coverage:summary": "node scripts/coverage-summary.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

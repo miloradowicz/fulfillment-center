@@ -1,10 +1,4 @@
-/**
- * Тесты для контроллера счетов
- *
- * ВАЖНО: В этих тестах мы мокаем RolesGuard, чтобы обойти проверку ролей.
- * Это позволяет нам тестировать логику контроллера без необходимости настраивать
- * полную аутентификацию и авторизацию.
- */
+/* eslint-disable */
 
 import { Test, TestingModule } from '@nestjs/testing'
 import { InvoicesController } from '../src/controllers/invoices.controller'
@@ -16,19 +10,23 @@ import { RolesGuard } from '../src/guards/roles.guard'
 import { TokenAuthService } from '../src/services/token-auth.service'
 import { RolesService } from '../src/services/roles.service'
 import { ForbiddenException, NotFoundException } from '@nestjs/common'
-import { RequestWithUser } from 'src/types'
-
-// Мокаем RolesGuard, чтобы он пропускал все запросы
+import { RequestWithUser } from '../src/types'
 jest.mock('../src/guards/roles.guard', () => ({
   RolesGuard: jest.fn().mockImplementation(() => ({
     canActivate: jest.fn().mockReturnValue(true),
   })),
 }))
-
 describe('InvoicesController', () => {
   let controller: InvoicesController
   let service: InvoicesService
-
+  const mockUserId = new mongoose.Types.ObjectId('000000000000000000000001')
+  const mockReq = {
+    user: {
+      _id: mockUserId,
+      email: 'test@example.com',
+      role: 'admin'
+    }
+  } as RequestWithUser;
   const mockInvoice = {
     _id: 'invoice-id',
     invoiceNumber: 'INV-123',
@@ -45,17 +43,6 @@ describe('InvoicesController', () => {
     status: 'в ожидании',
     isArchived: false,
   }
-
-  const mockUserId = 'user-id'
-
-  const mockUser = {
-    _id: mockUserId
-  }
-
-  const mockRequest = {
-    user: mockUser
-  } as RequestWithUser
-
   const mockInvoicesService = {
     getAll: jest.fn(),
     getOne: jest.fn(),
@@ -66,15 +53,12 @@ describe('InvoicesController', () => {
     archive: jest.fn(),
     delete: jest.fn(),
   }
-
   const mockTokenAuthService = {
     validateToken: jest.fn().mockResolvedValue(true),
   }
-
   const mockRolesService = {
     checkRoles: jest.fn().mockReturnValue(true),
   }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [InvoicesController],
@@ -102,90 +86,66 @@ describe('InvoicesController', () => {
       .overrideGuard(RolesGuard)
       .useValue({ canActivate: () => true })
       .compile()
-
     controller = module.get<InvoicesController>(InvoicesController)
     service = module.get<InvoicesService>(InvoicesService)
   })
-
   afterEach(() => {
     jest.clearAllMocks()
   })
-
   it('should be defined', () => {
     expect(controller).toBeDefined()
   })
-
   describe('getAllInvoices', () => {
     it('should return all invoices', async () => {
       const invoices = [mockInvoice]
       mockInvoicesService.getAll.mockResolvedValue(invoices)
-
       const result = await controller.getAllInvoices()
-
       expect(service.getAll).toHaveBeenCalled()
       expect(result).toEqual(invoices)
     })
   })
-
   describe('getArchivedInvoices', () => {
     it('should return all archived invoices', async () => {
       const archivedInvoices = [{ ...mockInvoice, isArchived: true }]
       mockInvoicesService.getArchived.mockResolvedValue(archivedInvoices)
-
       const result = await controller.getArchivedInvoices()
-
       expect(service.getArchived).toHaveBeenCalled()
       expect(result).toEqual(archivedInvoices)
     })
   })
-
   describe('getOneInvoice', () => {
     it('should return an invoice by id', async () => {
       mockInvoicesService.getOne.mockResolvedValue(mockInvoice)
-
       const result = await controller.getOneInvoice('invoice-id')
-
       expect(service.getOne).toHaveBeenCalledWith('invoice-id')
       expect(result).toEqual(mockInvoice)
     })
-
     it('should throw NotFoundException when invoice not found', async () => {
       mockInvoicesService.getOne.mockRejectedValue(new NotFoundException('Счёт не найден.'))
-
       await expect(controller.getOneInvoice('nonexistent-id')).rejects.toThrow(NotFoundException)
     })
-
     it('should throw ForbiddenException when invoice is archived', async () => {
       mockInvoicesService.getOne.mockRejectedValue(new ForbiddenException('Счёт находится в архиве.'))
-
       await expect(controller.getOneInvoice('archived-id')).rejects.toThrow(ForbiddenException)
     })
   })
-
   describe('getOneArchivedInvoice', () => {
     it('should return an archived invoice by id', async () => {
       const archivedInvoice = { ...mockInvoice, isArchived: true }
       mockInvoicesService.getArchivedOne.mockResolvedValue(archivedInvoice)
-
       const result = await controller.getOneArchivedInvoice('invoice-id', '1')
-
       expect(service.getArchivedOne).toHaveBeenCalledWith('invoice-id', true)
       expect(result).toEqual(archivedInvoice)
     })
-
     it('should throw NotFoundException when archived invoice not found', async () => {
       mockInvoicesService.getArchivedOne.mockRejectedValue(new NotFoundException('Счёт не найден.'))
-
       await expect(controller.getOneArchivedInvoice('nonexistent-id', '1')).rejects.toThrow(NotFoundException)
     })
-
     it('should throw ForbiddenException when invoice is not archived', async () => {
       mockInvoicesService.getArchivedOne.mockRejectedValue(new ForbiddenException('Счёт не находится в архиве.'))
-
       await expect(controller.getOneArchivedInvoice('non-archived-id', '1')).rejects.toThrow(ForbiddenException)
     })
   })
-
   describe('createInvoice', () => {
     it('should create an invoice successfully', async () => {
       const createInvoiceDto: CreateInvoiceDto = {
@@ -200,85 +160,62 @@ describe('InvoicesController', () => {
         paid_amount: 0,
         totalAmount: 100,
       } as any
-
       mockInvoicesService.create.mockResolvedValue(mockInvoice)
-
-      const result = await controller.createInvoice(createInvoiceDto, mockRequest)
-
+      const result = await controller.createInvoice(createInvoiceDto, mockReq)
       expect(service.create).toHaveBeenCalledWith(createInvoiceDto, mockUserId)
       expect(result).toEqual(mockInvoice)
     })
   })
-
   describe('updateInvoice', () => {
     it('should update an invoice successfully', async () => {
       const updateInvoiceDto: UpdateInvoiceDto = {
         paid_amount: 50,
       }
-
       const updatedInvoice = {
         ...mockInvoice,
         paid_amount: 50,
         status: 'частично оплачено',
       }
-
       mockInvoicesService.update.mockResolvedValue(updatedInvoice)
-
-      const result = await controller.updateInvoice('invoice-id', updateInvoiceDto, mockRequest)
-
+      const result = await controller.updateInvoice('invoice-id', updateInvoiceDto, mockReq)
       expect(service.update).toHaveBeenCalledWith('invoice-id', updateInvoiceDto, mockUserId)
       expect(result).toEqual(updatedInvoice)
     })
-
     it('should throw NotFoundException when invoice not found', async () => {
       const updateInvoiceDto: UpdateInvoiceDto = {
         paid_amount: 50,
       }
-
       mockInvoicesService.update.mockRejectedValue(new NotFoundException('Счёт не найден.'))
-
-      await expect(controller.updateInvoice('nonexistent-id', updateInvoiceDto, mockRequest)).rejects.toThrow(NotFoundException)
+      await expect(controller.updateInvoice('nonexistent-id', updateInvoiceDto, mockReq)).rejects.toThrow(NotFoundException)
     })
   })
-
   describe('archiveInvoice', () => {
     it('should archive an invoice successfully', async () => {
       const archiveResult = { message: 'Счёт перемещён в архив.' }
       mockInvoicesService.archive.mockResolvedValue(archiveResult)
-
-      const result = await controller.archiveInvoice('invoice-id', mockRequest)
-
+      const result = await controller.archiveInvoice('invoice-id', mockReq)
       expect(service.archive).toHaveBeenCalledWith('invoice-id', mockUserId)
       expect(result).toEqual(archiveResult)
     })
-
     it('should throw NotFoundException when invoice not found', async () => {
       mockInvoicesService.archive.mockRejectedValue(new NotFoundException('Счёт не найден.'))
-
-      await expect(controller.archiveInvoice('nonexistent-id', mockRequest)).rejects.toThrow(NotFoundException)
+      await expect(controller.archiveInvoice('nonexistent-id', mockReq)).rejects.toThrow(NotFoundException)
     })
-
     it('should throw ForbiddenException when invoice already archived', async () => {
       mockInvoicesService.archive.mockRejectedValue(new ForbiddenException('Счёт уже в архиве.'))
-
-      await expect(controller.archiveInvoice('already-archived-id', mockRequest)).rejects.toThrow(ForbiddenException)
+      await expect(controller.archiveInvoice('already-archived-id', mockReq)).rejects.toThrow(ForbiddenException)
     })
   })
-
   describe('deleteInvoice', () => {
     it('should delete an invoice successfully', async () => {
       const deleteResult = { message: 'Счёт успешно удалён.' }
       mockInvoicesService.delete.mockResolvedValue(deleteResult)
-
       const result = await controller.deleteInvoice('invoice-id')
-
       expect(service.delete).toHaveBeenCalledWith('invoice-id')
       expect(result).toEqual(deleteResult)
     })
-
     it('should throw NotFoundException when invoice not found', async () => {
       mockInvoicesService.delete.mockRejectedValue(new NotFoundException('Счёт не найден.'))
-
       await expect(controller.deleteInvoice('nonexistent-id')).rejects.toThrow(NotFoundException)
     })
   })

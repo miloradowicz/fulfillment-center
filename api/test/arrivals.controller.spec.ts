@@ -1,10 +1,13 @@
+/* eslint-disable */
+
 import { Test, TestingModule } from '@nestjs/testing'
 import { ArrivalsController } from '../src/controllers/arrivals.controller'
 import { ArrivalsService } from '../src/services/arrivals.service'
 import { RolesGuard } from '../src/guards/roles.guard'
 import { Readable } from 'stream'
-import { RequestWithUser } from 'src/types'
-
+import { ForbiddenException, NotFoundException } from '@nestjs/common'
+import mongoose from 'mongoose'
+import { RequestWithUser } from '../src/types'
 class MockArrivalDocument {
   isArchived: boolean = false
   client: string
@@ -12,26 +15,27 @@ class MockArrivalDocument {
   arrival_status: string
   received_amount: any[] = []
   defects: any[] = []
-
   constructor(data: any = {}) {
     Object.assign(this, data)
   }
-
   populate(field: string) {
     return this
   }
 }
-
 describe('ArrivalsController', () => {
   let controller: ArrivalsController
   let service: ArrivalsService
-
-  // Мок для RolesGuard
+  const mockUserId = new mongoose.Types.ObjectId('000000000000000000000001')
+  const mockReq = {
+    user: {
+      _id: mockUserId,
+      email: 'test@example.com',
+      role: 'admin'
+    }
+  } as RequestWithUser;
   const mockRolesGuard = {
     canActivate: jest.fn().mockImplementation(() => true),
   }
-
-  // Мок для ArrivalsService
   const mockArrivalsService = {
     getAllByClient: jest.fn(),
     getAll: jest.fn(),
@@ -44,15 +48,6 @@ describe('ArrivalsController', () => {
     unarchive: jest.fn(),
     delete: jest.fn(),
   }
-
-  const mockUser = {
-    _id: 'user-id'
-  }
-
-  const mockRequest = {
-    user: mockUser
-  } as RequestWithUser
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ArrivalsController],
@@ -66,17 +61,13 @@ describe('ArrivalsController', () => {
       .overrideGuard(RolesGuard)
       .useValue(mockRolesGuard)
       .compile()
-
     controller = module.get<ArrivalsController>(ArrivalsController)
     service = module.get<ArrivalsService>(ArrivalsService)
-
     jest.clearAllMocks()
   })
-
   it('should be defined', () => {
     expect(controller).toBeDefined()
   })
-
   describe('getAllArrivals', () => {
     it('должен вызвать getAllByClient с clientId, если clientId указан', async () => {
       const clientId = 'client-id'
@@ -86,15 +77,11 @@ describe('ArrivalsController', () => {
         stock: 'stock-id',
         arrival_status: 'pending',
       })]
-
       mockArrivalsService.getAllByClient.mockResolvedValue(expectedArrivals)
-
       const result = await controller.getAllArrivals(clientId, '1')
-
       expect(service.getAllByClient).toHaveBeenCalledWith(clientId, true)
       expect(result).toEqual(expectedArrivals)
     })
-
     it('должен вызвать getAll, если clientId не указан', async () => {
       const expectedArrivals = [new MockArrivalDocument({
         _id: 'arrival-id',
@@ -102,45 +89,32 @@ describe('ArrivalsController', () => {
         stock: 'stock-id',
         arrival_status: 'pending',
       })]
-
       mockArrivalsService.getAll.mockResolvedValue(expectedArrivals)
-
       const result = await controller.getAllArrivals('', '1')
-
       expect(service.getAll).toHaveBeenCalledWith(true)
       expect(result).toEqual(expectedArrivals)
     })
-
     it('должен передать параметр populate как false, если он не равен "1"', async () => {
       const expectedArrivals = [new MockArrivalDocument()]
       mockArrivalsService.getAll.mockResolvedValue(expectedArrivals)
-
       await controller.getAllArrivals('', '0')
-
       expect(service.getAll).toHaveBeenCalledWith(false)
     })
   })
-
   describe('getAllArchivedArrivals', () => {
     it('должен вызвать getArchivedAll с правильными параметрами', async () => {
       const expectedArrivals = [new MockArrivalDocument({ isArchived: true })]
       mockArrivalsService.getArchivedAll.mockResolvedValue(expectedArrivals)
-
       const result = await controller.getAllArchivedArrivals('1')
-
       expect(service.getArchivedAll).toHaveBeenCalledWith(true)
       expect(result).toEqual(expectedArrivals)
     })
-
     it('должен передать параметр populate как false, если он не равен "1"', async () => {
       mockArrivalsService.getArchivedAll.mockResolvedValue([])
-
       await controller.getAllArchivedArrivals('0')
-
       expect(service.getArchivedAll).toHaveBeenCalledWith(false)
     })
   })
-
   describe('getOneArrival', () => {
     it('должен вызвать getOne с правильными параметрами', async () => {
       const arrivalId = 'arrival-id'
@@ -149,25 +123,18 @@ describe('ArrivalsController', () => {
         client: 'client-id',
         stock: 'stock-id',
       })
-
       mockArrivalsService.getOne.mockResolvedValue(expectedArrival)
-
       const result = await controller.getOneArrival(arrivalId, '1')
-
       expect(service.getOne).toHaveBeenCalledWith(arrivalId, true)
       expect(result).toEqual(expectedArrival)
     })
-
     it('должен передать параметр populate как false, если он не равен "1"', async () => {
       const arrivalId = 'arrival-id'
       mockArrivalsService.getOne.mockResolvedValue(new MockArrivalDocument())
-
       await controller.getOneArrival(arrivalId, '0')
-
       expect(service.getOne).toHaveBeenCalledWith(arrivalId, false)
     })
   })
-
   describe('getOneArchivedArrival', () => {
     it('должен вызвать getArchivedOne с правильными параметрами', async () => {
       const arrivalId = 'arrival-id'
@@ -175,148 +142,94 @@ describe('ArrivalsController', () => {
         _id: arrivalId,
         isArchived: true,
       })
-
       mockArrivalsService.getArchivedOne.mockResolvedValue(expectedArrival)
-
       const result = await controller.getOneArchivedArrival(arrivalId, '1')
-
       expect(service.getArchivedOne).toHaveBeenCalledWith(arrivalId, true)
       expect(result).toEqual(expectedArrival)
     })
-
     it('должен передать параметр populate как false, если он не равен "1"', async () => {
       const arrivalId = 'arrival-id'
       mockArrivalsService.getArchivedOne.mockResolvedValue(new MockArrivalDocument())
-
       await controller.getOneArchivedArrival(arrivalId, '0')
-
       expect(service.getArchivedOne).toHaveBeenCalledWith(arrivalId, false)
     })
   })
-
   describe('createArrival', () => {
-    it('должен вызвать create с правильными параметрами', async () => {
+    it('should create an arrival', async () => {
+      const files = [] as Express.Multer.File[]
       const arrivalDto = {
-        client: 'client-id',
-        stock: 'stock-id',
-        received_amount: [{ product: 'product-id', amount: 10 }],
-        defects: [],
+        client: new mongoose.Types.ObjectId(),
+        products: [
+          {
+            product: new mongoose.Types.ObjectId(),
+            quantity: 5,
+          },
+        ],
+        services: [],
       }
-
-      const files = [
-        {
-          fieldname: 'file',
-          originalname: 'test.jpg',
-          buffer: Buffer.from('test'),
-          mimetype: 'image/jpeg',
-          size: 123,
-          stream: new Readable(),
-          destination: '',
-          filename: '',
-          path: '',
-          encoding: '7bit',
-        },
-      ] as Express.Multer.File[]
-
-      const expectedArrival = new MockArrivalDocument({
-        _id: 'new-arrival-id',
+      const mockArrival = {
+        _id: 'arrival-id',
+        arrivalNumber: 'ARR-001',
         ...arrivalDto,
-      })
-
-      mockArrivalsService.create.mockResolvedValue(expectedArrival)
-
-      const result = await controller.createArrival(arrivalDto as any, files, mockRequest)
-
-      expect(service.create).toHaveBeenCalledWith(arrivalDto, files, mockUser._id)
-      expect(result).toEqual(expectedArrival)
+      }
+      mockArrivalsService.create.mockResolvedValue(mockArrival)
+      const result = await controller.createArrival(arrivalDto as any, files, mockReq)
+      expect(service.create).toHaveBeenCalledWith(arrivalDto, files, mockUserId)
+      expect(result).toEqual(mockArrival)
     })
   })
-
   describe('updateArrival', () => {
-    it('должен вызвать update с правильными параметрами', async () => {
+    it('should update an arrival', async () => {
       const arrivalId = 'arrival-id'
+      const files = [] as Express.Multer.File[]
       const updateDto = {
-        arrival_status: 'completed',
-        received_amount: [{ product: 'product-id', amount: 15 }],
+        client: new mongoose.Types.ObjectId(),
+        products: [
+          {
+            product: new mongoose.Types.ObjectId(),
+            quantity: 10,
+          },
+        ],
       }
-
-      const files = [
-        {
-          fieldname: 'file',
-          originalname: 'updated.jpg',
-          buffer: Buffer.from('test'),
-          mimetype: 'image/jpeg',
-          size: 456,
-          stream: new Readable(),
-          destination: '',
-          filename: '',
-          path: '',
-          encoding: '7bit',
-        },
-      ] as Express.Multer.File[]
-
-      const updatedArrival = new MockArrivalDocument({
+      const updatedArrival = {
         _id: arrivalId,
-        client: 'client-id',
-        stock: 'stock-id',
-        arrival_status: 'completed',
-        received_amount: [{ product: 'product-id', amount: 15 }],
-      })
-
+        arrivalNumber: 'ARR-001',
+        ...updateDto,
+      }
       mockArrivalsService.update.mockResolvedValue(updatedArrival)
-
-      const result = await controller.updateArrival(arrivalId, updateDto as any, files, mockRequest)
-
-      expect(service.update).toHaveBeenCalledWith(arrivalId, updateDto, files, mockUser._id)
+      const result = await controller.updateArrival(arrivalId, updateDto as any, files, mockReq)
+      expect(service.update).toHaveBeenCalledWith(arrivalId, updateDto, files, mockUserId)
       expect(result).toEqual(updatedArrival)
     })
   })
-
   describe('archiveArrival', () => {
-    it('должен вызвать archive с правильными параметрами', async () => {
+    it('should archive an arrival', async () => {
       const arrivalId = 'arrival-id'
-      const archivedArrival = new MockArrivalDocument({
-        _id: arrivalId,
-        isArchived: true,
-      })
-
-      mockArrivalsService.archive.mockResolvedValue(archivedArrival)
-
-      const result = await controller.archiveArrival(arrivalId, mockRequest)
-
-      expect(service.archive).toHaveBeenCalledWith(arrivalId, mockUser._id)
-      expect(result).toEqual(archivedArrival)
+      const archiveResult = { message: 'Приход перемещен в архив' }
+      mockArrivalsService.archive.mockResolvedValue(archiveResult)
+      const result = await controller.archiveArrival(arrivalId, mockReq)
+      expect(service.archive).toHaveBeenCalledWith(arrivalId, mockUserId)
+      expect(result).toEqual(archiveResult)
     })
   })
-
   describe('unarchiveArrival', () => {
-    it('должен вызвать unarchive с правильными параметрами', async () => {
+    it('should unarchive an arrival', async () => {
       const arrivalId = 'arrival-id'
-      const unarchivedArrival = new MockArrivalDocument({
-        _id: arrivalId,
-        isArchived: false,
-      })
-
-      mockArrivalsService.unarchive.mockResolvedValue(unarchivedArrival)
-
-      const result = await controller.unarchiveArrival(arrivalId, mockRequest)
-
-      expect(service.unarchive).toHaveBeenCalledWith(arrivalId, mockUser._id)
-      expect(result).toEqual(unarchivedArrival)
+      const unarchiveResult = { message: 'Приход восстановлен из архива' }
+      mockArrivalsService.unarchive.mockResolvedValue(unarchiveResult)
+      const result = await controller.unarchiveArrival(arrivalId, mockReq)
+      expect(service.unarchive).toHaveBeenCalledWith(arrivalId, mockUserId)
+      expect(result).toEqual(unarchiveResult)
     })
   })
-
   describe('deleteArrival', () => {
     it('должен вызвать delete с правильными параметрами', async () => {
       const arrivalId = 'arrival-id'
       const deletedArrival = new MockArrivalDocument({
         _id: arrivalId,
       })
-
       mockArrivalsService.delete.mockResolvedValue(deletedArrival)
-
       const result = await controller.deleteArrival(arrivalId)
-
       expect(service.delete).toHaveBeenCalledWith(arrivalId)
       expect(result).toEqual(deletedArrival)
     })
