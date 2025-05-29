@@ -1,7 +1,21 @@
 import { Options } from 'check-password-strength'
 
-export const apiHost = import.meta.env.VITE_API_HOST ?? 'https://localhost:8000'
-export const featureProtection = import.meta.env.VITE_FEATURE_PROTECTION_DISABLED !== '1'
+const isTestEnvironment = typeof process !== 'undefined' && process.env.NODE_ENV === 'test'
+
+// Функция для безопасного получения import.meta.env
+const getImportMetaEnv = (key: string, defaultValue: string) => {
+  if (isTestEnvironment) {
+    return defaultValue
+  }
+  try {
+    return import.meta.env[key] ?? defaultValue
+  } catch {
+    return defaultValue
+  }
+}
+
+export const apiHost = getImportMetaEnv('VITE_API_HOST', 'http://localhost:8000')
+export const featureProtection = isTestEnvironment ? true : (getImportMetaEnv('VITE_FEATURE_PROTECTION_DISABLED', '0') !== '1')
 
 export const emailRegex = /^(\w+[-.]?\w+)@(\w+)([.-]?\w+)?(\.[a-zA-Z]{2,3})$/
 export const phoneNumberRegex = /^(\+?\d{1,3}[-.\s]?)?(\(?\d{1,4}\)?[-.\s]?)?(\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,4})$/

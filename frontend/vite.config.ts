@@ -15,6 +15,6 @@ export default defineConfig({
     https: existsSync('./cert/privkey.pem') && existsSync('./cert/fullchain.pem') ? {
       key: readFileSync('./cert/privkey.pem'),
       cert: readFileSync('./cert/fullchain.pem'),
-    } : undefined
-  }
+    } : undefined,
+  },
 })
